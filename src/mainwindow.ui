@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>549</width>
+    <height>402</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Serial Pong</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QGraphicsView" name="graphicsView">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="renderHints">
+       <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+      </property>
+      <property name="cacheMode">
+       <set>QGraphicsView::CacheBackground</set>
+      </property>
+      <property name="viewportUpdateMode">
+       <enum>QGraphicsView::BoundingRectViewportUpdate</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>549</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuGame">
+    <property name="title">
+     <string>Jogo</string>
+    </property>
+    <addaction name="actionNewGame"/>
+    <addaction name="actionPause"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Opções</string>
+    </property>
+    <addaction name="actionControls"/>
+    <addaction name="separator"/>
+    <addaction name="actionVelocityPlus"/>
+    <addaction name="actionVelocityMinus"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Ajuda</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuGame"/>
+   <addaction name="menuOptions"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNewGame"/>
+   <addaction name="actionPause"/>
+   <addaction name="separator"/>
+   <addaction name="actionVelocityPlus"/>
+   <addaction name="actionVelocityMinus"/>
+  </widget>
+  <action name="actionNewGame">
+   <property name="icon">
+    <iconset theme="document-new">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Novo jogo</string>
+   </property>
+   <property name="toolTip">
+    <string>Iniciar um novo jogo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset theme="help-about">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Sobre</string>
+   </property>
+   <property name="toolTip">
+    <string>Sobre o jogo</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="icon">
+    <iconset theme="application-exit">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Sair</string>
+   </property>
+  </action>
+  <action name="actionControls">
+   <property name="text">
+    <string>Controles</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="text">
+    <string>Pausar</string>
+   </property>
+   <property name="toolTip">
+    <string>Pausar o jogo</string>
+   </property>
+   <property name="shortcut">
+    <string>P</string>
+   </property>
+  </action>
+  <action name="actionVelocityPlus">
+   <property name="icon">
+    <iconset theme="add">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Aumentar velocidade</string>
+   </property>
+   <property name="toolTip">
+    <string>Aumentar a velocidade da bola</string>
+   </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
+  </action>
+  <action name="actionVelocityMinus">
+   <property name="icon">
+    <iconset theme="remove">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Diminuir velocidade</string>
+   </property>
+   <property name="toolTip">
+    <string>Diminuir a velocidade da bola</string>
+   </property>
+   <property name="shortcut">
+    <string>-</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
