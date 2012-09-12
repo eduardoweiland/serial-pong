@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="minus">minus.png</file>
+        <file alias="new">new.png</file>
+        <file alias="plus">plus.png</file>
+    </qresource>
+</RCC>

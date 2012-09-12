@@ -88,13 +88,14 @@ void Ball::advance( int phase )
     if ( min == top ) {
         angle = M_PI - angle;
     }
+    // bateu em baixo
     else if ( min == bottom ) {
         angle = 2 * M_PI - angle;
     }
     else if ( min == left ) {
         qDebug("left");
     }
-    else if (min == right) {
+    else if ( min == right ) {
         qDebug("right");
     }
 
@@ -110,14 +111,16 @@ void Ball::advance( int phase )
  * @note Esse método não verifica se a bola colidiu em alguma parede, apenas
  * altera seu estado como se tivesse colidido com uma.
  */
-void Ball::collidesWithWall() {
+void Ball::collidesWithWall()
+{
 }
 
 /**
  * Método utilizado para acelerar a bola até um determinado nível máximo.
  * O limite máximo para a velocidade é 15 pixels/frame.
  */
-void Ball::accelerate() {
+void Ball::accelerate()
+{
     // velocidade máxima 15
     if ( speed < 15 ) {
         speed += 0.5;
@@ -128,7 +131,8 @@ void Ball::accelerate() {
  * Método utilizado para desacelerar a bola até um determinado nível mínimo.
  * O limite mínimo para a velocidade é 0.5 pixels/frame.
  */
-void Ball::deaccelerate() {
+void Ball::deaccelerate()
+{
     // velocidade mínima 0.5
     if ( speed > 0.5 ) {
         speed -= 0.5;

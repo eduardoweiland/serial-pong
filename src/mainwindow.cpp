@@ -1,3 +1,4 @@
+#include <QMessageBox>
 #include <QTimer>
 #include <QDebug>
 
@@ -5,6 +6,7 @@
 #include "ui_mainwindow.h"
 #include "ball.h"
 #include "qextserialport.h"
+#include "globals.h"
 
 /**
  * Construtor.
@@ -23,6 +25,7 @@ MainWindow::MainWindow( QWidget * parent ) :
     connect( ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()) );
     connect( ui->actionVelocityPlus, SIGNAL(triggered()), this, SLOT(accelerateBall()) );
     connect( ui->actionVelocityMinus, SIGNAL(triggered()), this, SLOT(deaccelerateBall()) );
+    connect( ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()) );
 
     // cria a cena para conter todos os itens do jogo.
     scene = new QGraphicsScene( 0, 0, 1100, 500 );
@@ -48,7 +51,7 @@ MainWindow::MainWindow( QWidget * parent ) :
     timer->start( 1000 / 20 );  // 20 FPS
 
 
-    port = new QextSerialPort( "/dev/ttyS0" );
+    port = new QextSerialPort( SERIALPORT );
     connect( port, SIGNAL(readyRead()), this, SLOT(onDataAvailable()) );
     port->open( QIODevice::ReadWrite );
 }
@@ -61,10 +64,14 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete timer;
+    delete scene;
+    delete field;
+    delete ball;
 }
 
 /**
  * Slot utilizado para aumentar a velocidade da bola.
+ * Recebe os eventos tanto do botão quanto da tecla de atalho.
  */
 void MainWindow::accelerateBall()
 {
@@ -73,6 +80,7 @@ void MainWindow::accelerateBall()
 
 /**
  * Slot utilizado para diminuir a velocidade da bola.
+ * Recebe os eventos tanto do botão quanto da tecla de atalho.
  */
 void MainWindow::deaccelerateBall()
 {
@@ -83,4 +91,17 @@ void MainWindow::onDataAvailable()
 {
     QByteArray data = port->readAll();
     qDebug() << data;
+}
+
+/**
+ * Slot utilizado para exibir o diálogo sobre o aplicativo.
+ */
+void MainWindow::about()
+{
+    QString msg = "";
+    msg += "<h3>Serial Pong (Futebol Simplificado Multiplayer)</h3>";
+    msg += "<h4>Desenvolvido por:</h4>";
+    msg += "<ul><li>Eduardo Weiland</li><li>Wellington Camara Lopes</li></ul>";
+
+    QMessageBox::about( this, "Sobre o jogo", msg );
 }

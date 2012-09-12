@@ -12,7 +12,10 @@ SOURCES += src/main.cpp\
 
 HEADERS += src/mainwindow.h \
            src/ball.h \
-           src/gameoptions.h
+           src/gameoptions.h \
+           src/globals.h
 
 FORMS += src/mainwindow.ui \
          src/gameoptions.ui
+
+RESOURCES += resources/icons.qrc
