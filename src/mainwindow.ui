@@ -94,9 +94,8 @@
   </widget>
   <action name="actionNewGame">
    <property name="icon">
-    <iconset theme="document-new">
-     <normaloff/>
-    </iconset>
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/new</normaloff>:/new</iconset>
    </property>
    <property name="text">
     <string>Novo jogo</string>
@@ -110,7 +109,7 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset theme="help-about">
+    <iconset>
      <normaloff/>
     </iconset>
    </property>
@@ -123,7 +122,7 @@
   </action>
   <action name="actionQuit">
    <property name="icon">
-    <iconset theme="application-exit">
+    <iconset>
      <normaloff/>
     </iconset>
    </property>
@@ -149,9 +148,8 @@
   </action>
   <action name="actionVelocityPlus">
    <property name="icon">
-    <iconset theme="add">
-     <normaloff/>
-    </iconset>
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/plus</normaloff>:/plus</iconset>
    </property>
    <property name="text">
     <string>Aumentar velocidade</string>
@@ -165,9 +163,8 @@
   </action>
   <action name="actionVelocityMinus">
    <property name="icon">
-    <iconset theme="remove">
-     <normaloff/>
-    </iconset>
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/minus</normaloff>:/minus</iconset>
    </property>
    <property name="text">
     <string>Diminuir velocidade</string>
@@ -181,6 +178,8 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="../resources/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

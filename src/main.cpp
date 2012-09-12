@@ -12,12 +12,6 @@
 #include "mainwindow.h"
 #include "gameoptions.h"
 
-#ifdef Q_OS_LINUX
-# define SERIALPORT "/dev/ttyS0"
-#else
-# define SERIALPORT "COM1"
-#endif
-
 /**
  * Função main.
  * Responsável por criar a janela principal do jogo.
@@ -34,7 +28,7 @@ int main( int argc, char ** argv )
 
     QApplication app( argc, argv );
     app.setApplicationName( "Serial Pong" );
-    app.setApplicationVersion( "0.0.1" );
+    app.setApplicationVersion( "0.0.0.0.0.0.1 pre-pre-pre-alpha" );
     app.setOrganizationName( "Eduardo & Wellington softwares" ); // :D
 
     // exibe a janela principal maximizada

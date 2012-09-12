@@ -24,6 +24,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void about();
     void accelerateBall();
     void deaccelerateBall();
     void onDataAvailable();
