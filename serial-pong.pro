@@ -1,3 +1,10 @@
+# Trabalho de Programação Orientada a Objetos I
+# Serial Pong (Futebol Simplificado)
+#
+# Eduardo Weiland
+# Wellington Camara Lopes
+
+
 include(3rdparty/qextserialport/src/qextserialport.pri)
 
 QT += core gui

@@ -64,9 +64,9 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete timer;
-    delete scene;
     delete field;
     delete ball;
+    delete scene;
 }
 
 /**
