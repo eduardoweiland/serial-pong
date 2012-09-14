@@ -22,7 +22,10 @@ private:
     qreal speed;
     qreal radius;
 
-    void collidesWithWall();
+    void hitLeftWall();
+    void hitRightWall();
+    void hitTopWall();
+    void hitBottomWall();
 };
 
 #endif // BALL_H
