@@ -10,7 +10,7 @@
  *      Define o nome da porta serial que deve ser utilizada para se conectar.
  */
 #ifdef Q_OS_WIN
-# define SERIALPORT "COM1"
+# define SERIALPORT "COM2"
 #else
 # define SERIALPORT "/dev/ttyS0"
 #endif

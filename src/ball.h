@@ -26,6 +26,7 @@ private:
     void hitRightWall();
     void hitTopWall();
     void hitBottomWall();
+    void normalizeAngle();
 };
 
 #endif // BALL_H
