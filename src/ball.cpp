@@ -14,7 +14,7 @@
 Ball::Ball() : QGraphicsItem()
 {
     radius = 15;
-    angle  = 0.25 * M_PI;   // saída aleatória apenas para testes
+    angle  = 1.75 * M_PI;   // saída aleatória apenas para testes
     //angle  = (qrand() % 2) ? 0 : M_PI;   // saída para direita ou esquerda
     speed  = 2.5;
 }
@@ -57,6 +57,8 @@ void Ball::advance( int phase )
         return;
     }
 
+    normalizeAngle();
+
     //   TODO
     // 1     CALCULAR POSIÇÃO DE DESTINO |/
     // 2     VERIFICAR SE ESTÁ DENTRO DOS LIMITIES |/
@@ -86,7 +88,8 @@ void Ball::advance( int phase )
  */
 void Ball::hitLeftWall()
 {
-    setX(scene()->sceneRect().left() + radius);
+    // move de volta pra dentro do campo para depois não "bater" de novo
+    setX(scene()->sceneRect().left() + radius + 0.1);
     // chega entre 90 e 180
 //    if (angle > 0.5 * M_PI && angle < M_PI) {
         angle = M_PI - angle;
@@ -98,27 +101,36 @@ void Ball::hitLeftWall()
 }
 void Ball::hitRightWall()
 {
-    setX(scene()->sceneRect().right() - radius);
+    // move de volta pra dentro do campo para depois não "bater" de novo
+    setX(scene()->sceneRect().right() - radius - 0.1);
     // chega entre 0 e 90 (subindo)
-    if (angle > 0 && angle < 0.5 * M_PI) {
-        angle = 2 * M_PI - angle;
-    }
-    // entre 270 e 360 (descendo)
-    else {
+//    if (angle > 0 && angle < 0.5 * M_PI) {
         angle = M_PI - angle;
-    }
+//    }
+    // entre 270 e 360 (descendo)
+//    else {
+//        angle = M_PI - angle;
+//    }
 }
 void Ball::hitTopWall()
 {
-    setY(scene()->sceneRect().top() + radius);
+    // move de volta pra dentro do campo para depois não "bater" de novo
+    setY(scene()->sceneRect().top() + radius + 0.1);
     angle = 2 * M_PI - angle;
 }
 void Ball::hitBottomWall()
 {
-    setY(scene()->sceneRect().bottom() - radius);
+    // move de volta pra dentro do campo para depois não "bater" de novo
+    setY(scene()->sceneRect().bottom() - radius - 0.1);
     angle = 2 * M_PI - angle;
 }
 
+void Ball::normalizeAngle()
+{
+    if ( angle < 0 || angle > 2 * M_PI ) {
+        angle = qAbs( 2 * M_PI - qAbs( angle ) );
+    }
+}
 
 /**
  * Método utilizado para acelerar a bola até um determinado nível máximo.
@@ -126,8 +138,8 @@ void Ball::hitBottomWall()
  */
 void Ball::accelerate()
 {
-    // velocidade máxima 15
-    if ( speed < 15 ) {
+    // velocidade máxima 20
+    if ( speed < 20 ) {
         speed += 0.5;
     }
 }
