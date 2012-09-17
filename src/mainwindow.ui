@@ -48,7 +48,7 @@
      <x>0</x>
      <y>0</y>
      <width>549</width>
-     <height>29</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -65,8 +65,8 @@
     </property>
     <addaction name="actionControls"/>
     <addaction name="separator"/>
-    <addaction name="actionVelocityPlus"/>
-    <addaction name="actionVelocityMinus"/>
+    <addaction name="actionSpeedPlus"/>
+    <addaction name="actionSpeedMinus"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -87,8 +87,8 @@
    </attribute>
    <addaction name="actionNewGame"/>
    <addaction name="separator"/>
-   <addaction name="actionVelocityPlus"/>
-   <addaction name="actionVelocityMinus"/>
+   <addaction name="actionSpeedPlus"/>
+   <addaction name="actionSpeedMinus"/>
   </widget>
   <action name="actionNewGame">
    <property name="icon">
@@ -134,7 +134,7 @@
     <string>&amp;Controles</string>
    </property>
   </action>
-  <action name="actionVelocityPlus">
+  <action name="actionSpeedPlus">
    <property name="icon">
     <iconset resource="../resources/icons.qrc">
      <normaloff>:/add</normaloff>:/add</iconset>
@@ -149,7 +149,7 @@
     <string>+</string>
    </property>
   </action>
-  <action name="actionVelocityMinus">
+  <action name="actionSpeedMinus">
    <property name="icon">
     <iconset resource="../resources/icons.qrc">
      <normaloff>:/remove</normaloff>:/remove</iconset>
