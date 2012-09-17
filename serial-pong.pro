@@ -15,12 +15,14 @@ TEMPLATE = app
 SOURCES += src/main.cpp\
            src/mainwindow.cpp \
            src/ball.cpp \
-           src/gameoptions.cpp
+           src/gameoptions.cpp \
+           src/game.cpp
 
 HEADERS += src/mainwindow.h \
            src/ball.h \
            src/gameoptions.h \
-           src/globals.h
+           src/globals.h \
+           src/game.h
 
 FORMS += src/mainwindow.ui \
          src/gameoptions.ui

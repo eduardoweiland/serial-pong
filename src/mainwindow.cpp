@@ -5,7 +5,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ball.h"
-#include "qextserialport.h"
 #include "globals.h"
 
 /**
@@ -23,8 +22,8 @@ MainWindow::MainWindow( QWidget * parent ) :
 
     // conecta sinais e slots (eventos)
     connect( ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()) );
-    connect( ui->actionVelocityPlus, SIGNAL(triggered()), this, SLOT(accelerateBall()) );
-    connect( ui->actionVelocityMinus, SIGNAL(triggered()), this, SLOT(deaccelerateBall()) );
+    connect( ui->actionSpeedPlus, SIGNAL(triggered()), this, SLOT(accelerateBall()) );
+    connect( ui->actionSpeedMinus, SIGNAL(triggered()), this, SLOT(deaccelerateBall()) );
     connect( ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()) );
 
     // cria a cena para conter todos os itens do jogo.
@@ -48,18 +47,6 @@ MainWindow::MainWindow( QWidget * parent ) :
     timer = new QTimer( this );
     connect( timer, SIGNAL(timeout()), scene, SLOT(advance()) );
     timer->start( 1000 / 20 );  // 20 FPS
-
-
-    port = new QextSerialPort( SERIALPORT, QextSerialPort::Polling );
-    port->setBaudRate( BAUD38400 );
-    port->setFlowControl( FLOW_OFF );
-    port->setParity( PAR_NONE );
-    port->setDataBits( DATA_8 );
-    port->setStopBits( STOP_2 );
-    port->setTimeout( 100 );
-    connect( port, SIGNAL(readyRead()), this, SLOT(onDataAvailable()) );
-    port->open( QIODevice::ReadWrite | QIODevice::Unbuffered );
-    port->write("teste");
 }
 
 /**
@@ -91,12 +78,6 @@ void MainWindow::accelerateBall()
 void MainWindow::deaccelerateBall()
 {
     ball->deaccelerate();
-}
-
-void MainWindow::onDataAvailable()
-{
-    QByteArray data = port->readAll();
-    qDebug() << data;
 }
 
 /**

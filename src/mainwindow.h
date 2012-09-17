@@ -27,7 +27,6 @@ private slots:
     void about();
     void accelerateBall();
     void deaccelerateBall();
-    void onDataAvailable();
 
 private:
     Ui::MainWindow * ui;
