@@ -24,6 +24,7 @@ Ball::Ball() : QGraphicsItem()
  * Necessário para que o Qt possa mover corretamente o item.
  *
  * @return A área retangular ocupada pela bola na tela.
+ * @see http://qt-project.org/doc/qt-4.8/qgraphicsitem.html#boundingRect
  */
 QRectF Ball::boundingRect() const
 {
@@ -37,6 +38,7 @@ QRectF Ball::boundingRect() const
  * @param painter Ponteiro para o QPainter usado para desenhar o item.
  * @param Não utilizado.
  * @param Não utilizado.
+ * @see http://qt-project.org/doc/qt-4.8/qgraphicsitem.html#paint
  */
 void Ball::paint( QPainter * painter, const QStyleOptionGraphicsItem*, QWidget* )
 {
@@ -49,6 +51,7 @@ void Ball::paint( QPainter * painter, const QStyleOptionGraphicsItem*, QWidget* 
  * É chamado pelo Qt ao avançar um quadro na animação.
  *
  * @param phase Indica se o item deve se mover (1) ou apenas se preparar (0).
+ * @see http://qt-project.org/doc/qt-4.8/qgraphicsitem.html#advance
  */
 void Ball::advance( int phase )
 {
@@ -57,16 +60,8 @@ void Ball::advance( int phase )
         return;
     }
 
+    // garante um ângulo sempre entre 0 e 360 graus
     normalizeAngle();
-
-    //   TODO
-    // 1     CALCULAR POSIÇÃO DE DESTINO |/
-    // 2     VERIFICAR SE ESTÁ DENTRO DOS LIMITIES |/
-    //  2.1    SE NÃO ESTIVER, ALTERAR |/
-    // 3     VERIFICAR COLISÕES NAS PAREDES
-    //  3.1    SE FOR NA REGIÃO DO GOL, ENTÃO É GOL E FIM
-    // 4     VERIFICAR COLISÕES NOS JOGADORES
-    // 5     MOVER PARA A NOVA POSIÇÃO
 
     QRectF rect = scene()->sceneRect();
 
@@ -80,51 +75,69 @@ void Ball::advance( int phase )
 }
 
 /**
- * Método que trata a colisão da bola com uma parede, calculando o ângulo de
- * retorno.
+ * Método que trata a colisão da bola com a parede esquerda, calculando o ângulo
+ * de retorno.
  *
- * @note Esse método não verifica se a bola colidiu em alguma parede, apenas
- * altera seu estado como se tivesse colidido com uma.
+ * @note Esse método não verifica se a bola colidiu na parede, apenas altera seu
+ *       estado como se tivesse colidido com ela.
  */
 void Ball::hitLeftWall()
 {
     // move de volta pra dentro do campo para depois não "bater" de novo
     setX(scene()->sceneRect().left() + radius + 0.1);
-    // chega entre 90 e 180
-//    if (angle > 0.5 * M_PI && angle < M_PI) {
-        angle = M_PI - angle;
- //   }
-    // entre 180 e 270
-//    else {
- //       angle = M_PI - angle;
-  //  }
+
+    angle = M_PI - angle;
 }
+
+/**
+ * Método que trata a colisão da bola com a parede direita, calculando o ângulo
+ * de retorno.
+ *
+ * @note Esse método não verifica se a bola colidiu na parede, apenas altera seu
+ *       estado como se tivesse colidido com ela.
+ */
 void Ball::hitRightWall()
 {
     // move de volta pra dentro do campo para depois não "bater" de novo
     setX(scene()->sceneRect().right() - radius - 0.1);
-    // chega entre 0 e 90 (subindo)
-//    if (angle > 0 && angle < 0.5 * M_PI) {
-        angle = M_PI - angle;
-//    }
-    // entre 270 e 360 (descendo)
-//    else {
-//        angle = M_PI - angle;
-//    }
+
+    angle = M_PI - angle;
 }
+
+/**
+ * Método que trata a colisão da bola com a parede superior, calculando o ângulo
+ * de retorno.
+ *
+ * @note Esse método não verifica se a bola colidiu na parede, apenas altera seu
+ *       estado como se tivesse colidido com ela.
+ */
 void Ball::hitTopWall()
 {
     // move de volta pra dentro do campo para depois não "bater" de novo
     setY(scene()->sceneRect().top() + radius + 0.1);
+
     angle = 2 * M_PI - angle;
 }
+
+/**
+ * Método que trata a colisão da bola com a parede inferior, calculando o ângulo
+ * de retorno.
+ *
+ * @note Esse método não verifica se a bola colidiu na parede, apenas altera seu
+ *       estado como se tivesse colidido com ela.
+ */
 void Ball::hitBottomWall()
 {
     // move de volta pra dentro do campo para depois não "bater" de novo
     setY(scene()->sceneRect().bottom() - radius - 0.1);
+
     angle = 2 * M_PI - angle;
 }
 
+/**
+ * Método auxiliar para normalizar o ângulo e mantê-lo sempre dentro da faixa
+ * entre 0 e 360 graus.
+ */
 void Ball::normalizeAngle()
 {
     if ( angle < 0 || angle > 2 * M_PI ) {
@@ -134,7 +147,10 @@ void Ball::normalizeAngle()
 
 /**
  * Método utilizado para acelerar a bola até um determinado nível máximo.
- * O limite máximo para a velocidade é 15 pixels/frame.
+ * O limite máximo para a velocidade é 20 pixels/frame.
+ *
+ * @note A velocidade real da bola também depende do número de frames por
+ *       segundo (FPS) do jogo.
  */
 void Ball::accelerate()
 {
@@ -147,6 +163,9 @@ void Ball::accelerate()
 /**
  * Método utilizado para desacelerar a bola até um determinado nível mínimo.
  * O limite mínimo para a velocidade é 0.5 pixels/frame.
+ *
+ * @note A velocidade real da bola também depende do número de frames por
+ *       segundo (FPS) do jogo.
  */
 void Ball::deaccelerate()
 {

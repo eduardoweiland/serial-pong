@@ -30,7 +30,7 @@
        <enum>Qt::ScrollBarAlwaysOff</enum>
       </property>
       <property name="renderHints">
-       <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+       <set>QPainter::Antialiasing|QPainter::HighQualityAntialiasing|QPainter::NonCosmeticDefaultPen|QPainter::SmoothPixmapTransform|QPainter::TextAntialiasing</set>
       </property>
       <property name="cacheMode">
        <set>QGraphicsView::CacheBackground</set>
@@ -53,16 +53,15 @@
    </property>
    <widget class="QMenu" name="menuGame">
     <property name="title">
-     <string>Jogo</string>
+     <string>&amp;Jogo</string>
     </property>
     <addaction name="actionNewGame"/>
-    <addaction name="actionPause"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
-     <string>Opções</string>
+     <string>&amp;Opções</string>
     </property>
     <addaction name="actionControls"/>
     <addaction name="separator"/>
@@ -71,7 +70,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Ajuda</string>
+     <string>&amp;Ajuda</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
@@ -87,7 +86,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionNewGame"/>
-   <addaction name="actionPause"/>
    <addaction name="separator"/>
    <addaction name="actionVelocityPlus"/>
    <addaction name="actionVelocityMinus"/>
@@ -98,7 +96,7 @@
      <normaloff>:/new</normaloff>:/new</iconset>
    </property>
    <property name="text">
-    <string>Novo jogo</string>
+    <string>&amp;Novo jogo</string>
    </property>
    <property name="toolTip">
     <string>Iniciar um novo jogo</string>
@@ -109,12 +107,11 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset>
-     <normaloff/>
-    </iconset>
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/about</normaloff>:/about</iconset>
    </property>
    <property name="text">
-    <string>Sobre</string>
+    <string>&amp;Sobre</string>
    </property>
    <property name="toolTip">
     <string>Sobre o jogo</string>
@@ -122,37 +119,28 @@
   </action>
   <action name="actionQuit">
    <property name="icon">
-    <iconset>
-     <normaloff/>
-    </iconset>
+    <iconset resource="../resources/icons.qrc">
+     <normaloff>:/exit</normaloff>:/exit</iconset>
    </property>
    <property name="text">
-    <string>Sair</string>
+    <string>&amp;Sair</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionControls">
    <property name="text">
-    <string>Controles</string>
-   </property>
-  </action>
-  <action name="actionPause">
-   <property name="text">
-    <string>Pausar</string>
-   </property>
-   <property name="toolTip">
-    <string>Pausar o jogo</string>
-   </property>
-   <property name="shortcut">
-    <string>P</string>
+    <string>&amp;Controles</string>
    </property>
   </action>
   <action name="actionVelocityPlus">
    <property name="icon">
     <iconset resource="../resources/icons.qrc">
-     <normaloff>:/plus</normaloff>:/plus</iconset>
+     <normaloff>:/add</normaloff>:/add</iconset>
    </property>
    <property name="text">
-    <string>Aumentar velocidade</string>
+    <string>&amp;Aumentar velocidade</string>
    </property>
    <property name="toolTip">
     <string>Aumentar a velocidade da bola</string>
@@ -164,10 +152,10 @@
   <action name="actionVelocityMinus">
    <property name="icon">
     <iconset resource="../resources/icons.qrc">
-     <normaloff>:/minus</normaloff>:/minus</iconset>
+     <normaloff>:/remove</normaloff>:/remove</iconset>
    </property>
    <property name="text">
-    <string>Diminuir velocidade</string>
+    <string>&amp;Diminuir velocidade</string>
    </property>
    <property name="toolTip">
     <string>Diminuir a velocidade da bola</string>

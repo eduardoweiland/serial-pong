@@ -21,9 +21,11 @@
  *             opções padrão para softwares desenvolvidos com Qt.
  * @return Código de saída para o sistema operacional. Pode indicar um erro ou
  *         saída com sucesso.
+ * @see http://qt-project.org/doc/qt-4.8/qapplication.html#QApplication
  */
 int main( int argc, char ** argv )
 {
+    // inicializa a semente de números aleatórios
     qsrand( QTime(0,0,0).secsTo( QTime::currentTime() ) );
 
     QApplication app( argc, argv );
@@ -35,8 +37,8 @@ int main( int argc, char ** argv )
     MainWindow win;
     win.showMaximized();
 
-//    GameOptions * go = new GameOptions();
-//    go->show();
+    GameOptions * go = new GameOptions();
+    go->show();
 
     return app.exec();
 }
