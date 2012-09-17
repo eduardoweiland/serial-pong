@@ -12,7 +12,7 @@
 #ifdef Q_OS_WIN
 # define SERIALPORT "COM2"
 #else
-# define SERIALPORT "/dev/ttyS0"
+# define SERIALPORT "/dev/ttyS1"
 #endif
 
 #endif // GLOBALS_H

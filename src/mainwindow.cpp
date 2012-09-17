@@ -18,31 +18,30 @@ MainWindow::MainWindow( QWidget * parent ) :
     QMainWindow( parent ),
     ui( new Ui::MainWindow )
 {
-    // carrega a interface e conecta os eventos
+    // carrega a interface
     ui->setupUi( this );
 
-    // conecta sinais e slots
+    // conecta sinais e slots (eventos)
     connect( ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()) );
     connect( ui->actionVelocityPlus, SIGNAL(triggered()), this, SLOT(accelerateBall()) );
     connect( ui->actionVelocityMinus, SIGNAL(triggered()), this, SLOT(deaccelerateBall()) );
     connect( ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()) );
 
     // cria a cena para conter todos os itens do jogo.
-    scene = new QGraphicsScene( 0, 0, 1100, 500 );
+    scene = new QGraphicsScene( 0, 0, 1000, 500 );
     scene->setBackgroundBrush( Qt::black );
 
     // o campo do jogo (a bola não deve sair dele)
-    field = new QGraphicsRectItem( 0, 0, 1100, 500 );
+    field = new QGraphicsRectItem( 0, 0, 1000, 500 );
     field->setBrush( Qt::darkGreen );
     scene->addItem( field );
 
     // cria a bola e adiciona na cena
     ball = new Ball();
-    ball->setPos( 550, 250 );   // TODO: tem jeito melhor de centralizar?
+    ball->setPos( scene->width() / 2, scene->height() / 2 );
     scene->addItem( ball );
 
     ui->graphicsView->setScene( scene );
-    //ui->graphicsView->adjustSize();
 
     // inicializa o contador de frames
     // TODO: esperar o jogo começar para fazer isso
@@ -51,9 +50,16 @@ MainWindow::MainWindow( QWidget * parent ) :
     timer->start( 1000 / 20 );  // 20 FPS
 
 
-    port = new QextSerialPort( SERIALPORT );
+    port = new QextSerialPort( SERIALPORT, QextSerialPort::Polling );
+    port->setBaudRate( BAUD38400 );
+    port->setFlowControl( FLOW_OFF );
+    port->setParity( PAR_NONE );
+    port->setDataBits( DATA_8 );
+    port->setStopBits( STOP_2 );
+    port->setTimeout( 100 );
     connect( port, SIGNAL(readyRead()), this, SLOT(onDataAvailable()) );
-    port->open( QIODevice::ReadWrite );
+    port->open( QIODevice::ReadWrite | QIODevice::Unbuffered );
+    port->write("teste");
 }
 
 /**

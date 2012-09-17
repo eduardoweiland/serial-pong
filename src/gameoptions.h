@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+class QString;
+
 namespace Ui
 {
     class GameOptions;
@@ -21,7 +23,8 @@ private slots:
     void getMoveDownKey( bool pressed );
 
 private:
-    void keyPressEvent( QKeyEvent * e );
+    void keyPressEvent( QKeyEvent * event );
+    QString getKeyString( int code );
 
     Ui::GameOptions *ui;
 
