@@ -65,13 +65,19 @@ void Ball::advance( int phase )
 
     QRectF rect = scene()->sceneRect();
 
+    // move a bola considerando o ângulo e a velocidade atuais
+    // o movimento é feito em números inteiros (facilita a comunicação serial)
+    moveBy( qRound( cos( angle ) * speed ), qRound( -sin( angle ) * speed ) );
+
     // verifica se a bola bateu em alguma parede
+    //   !! essas verificações são feitas depois de mover
+    //   !! e valem apenas para o próximo frame
     if ( x() - radius <= rect.left()   ) hitLeftWall();
     if ( y() - radius <= rect.top()    ) hitTopWall();
     if ( x() + radius >= rect.right()  ) hitRightWall();
     if ( y() + radius >= rect.bottom() ) hitBottomWall();
 
-    moveBy( cos( angle ) * speed, -sin( angle ) * speed );
+    qDebug() << x() << " x " << y();
 }
 
 /**
@@ -83,8 +89,8 @@ void Ball::advance( int phase )
  */
 void Ball::hitLeftWall()
 {
-    // move de volta pra dentro do campo para depois não "bater" de novo
-    setX(scene()->sceneRect().left() + radius + 0.1);
+    // move sempre para o borda (evita que atravesse um ou dois pixels)
+    setX(scene()->sceneRect().left() + radius);
 
     angle = M_PI - angle;
 }
@@ -98,8 +104,8 @@ void Ball::hitLeftWall()
  */
 void Ball::hitRightWall()
 {
-    // move de volta pra dentro do campo para depois não "bater" de novo
-    setX(scene()->sceneRect().right() - radius - 0.1);
+    // move sempre para o borda (evita que atravesse um ou dois pixels)
+    setX(scene()->sceneRect().right() - radius);
 
     angle = M_PI - angle;
 }
@@ -113,8 +119,8 @@ void Ball::hitRightWall()
  */
 void Ball::hitTopWall()
 {
-    // move de volta pra dentro do campo para depois não "bater" de novo
-    setY(scene()->sceneRect().top() + radius + 0.1);
+    // move sempre para o borda (evita que atravesse um ou dois pixels)
+    setY(scene()->sceneRect().top() + radius);
 
     angle = 2 * M_PI - angle;
 }
@@ -128,8 +134,8 @@ void Ball::hitTopWall()
  */
 void Ball::hitBottomWall()
 {
-    // move de volta pra dentro do campo para depois não "bater" de novo
-    setY(scene()->sceneRect().bottom() - radius - 0.1);
+    // move sempre para o borda (evita que atravesse um ou dois pixels)
+    setY(scene()->sceneRect().bottom() - radius);
 
     angle = 2 * M_PI - angle;
 }
@@ -155,8 +161,8 @@ void Ball::normalizeAngle()
 void Ball::accelerate()
 {
     // velocidade máxima 20
-    if ( speed < 20 ) {
-        speed += 0.5;
+    if ( speed <= 19 ) {
+        speed++;
     }
 }
 
@@ -169,8 +175,8 @@ void Ball::accelerate()
  */
 void Ball::deaccelerate()
 {
-    // velocidade mínima 0.5
-    if ( speed > 0.5 ) {
-        speed -= 0.5;
+    // velocidade mínima 1
+    if ( speed >= 2 ) {
+        speed--;
     }
 }
