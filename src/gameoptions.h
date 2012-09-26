@@ -10,6 +10,14 @@ namespace Ui
     class GameOptions;
 }
 
+/**
+ * @class GameOptions gameoptions.h "gameoptions.h"
+ * Diálogo de configurações do jogo.
+ *
+ * Representa uma janela do tipo QDialog que é utilizada para configurar o jogo:
+ * o modo de jogo (servidor ou cliente), as teclas de controle do jogador, além
+ * de um modo avançado onde é possível definir a porta serial na qual conectar.
+ */
 class GameOptions : public QDialog
 {
     Q_OBJECT

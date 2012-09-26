@@ -3,13 +3,20 @@
 
 #include <QGraphicsItem>
 
+/**
+ * @class Ball ball.h "ball.h"
+ * Representa a bola do jogo.
+ *
+ * Essa classe é responsável por controlar a bola do jogo, calcular o movimento,
+ * verificar colisões com as laterais e fundo do campo, etc.
+ */
 class Ball : public QGraphicsItem
 {
 public:
     Ball();
 
     QRectF boundingRect() const;
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *);
+    void paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget );
 
     void accelerate();
     void deaccelerate();
@@ -19,8 +26,8 @@ protected:
 
 private:
     qreal angle;
-    qreal speed;
-    qreal radius;
+    int   speed;
+    int   radius;
 
     void hitLeftWall();
     void hitRightWall();
