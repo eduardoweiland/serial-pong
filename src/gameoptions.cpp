@@ -8,7 +8,7 @@
  * Construtor.
  * Cria uma nova janela de opções do jogo.
  *
- * @note O jogo só deve ser iniciado depois que os dois jogadores configurarem
+ * @todo O jogo só deve ser iniciado depois que os dois jogadores configurarem
  *       as opções nessa janela.
  */
 GameOptions::GameOptions( QWidget *parent ) :
@@ -80,7 +80,7 @@ void GameOptions::getMoveDownKey( bool pressed )
  * Utilizado quando o jogador clica em um dos botões para escolher a tecla de
  * movimentação.
  *
- * @param e O evento de pressionamento da tecla.
+ * @param event O evento de pressionamento da tecla.
  */
 void GameOptions::keyPressEvent( QKeyEvent * event )
 {
@@ -111,6 +111,7 @@ void GameOptions::keyPressEvent( QKeyEvent * event )
  *
  * @param code O código da tecla pressionada.
  * @return Uma string que representa a tecla.
+ * @note Para teclas que não são permitidas o método retorna tecla desconhecida.
  */
 QString GameOptions::getKeyString( int code )
 {
@@ -121,31 +122,34 @@ QString GameOptions::getKeyString( int code )
     QString str;
 
     switch ( code ) {
-        case Qt::Key_Down:
-            str = "Seta para baixo";
-            break;
-        case Qt::Key_Up:
-            str = "Seta para cima";
-            break;
-        case Qt::Key_Left:
-            str = "Seta para esquerda";
-            break;
-        case Qt::Key_Right:
-            str = "Seta para direita";
-            break;
-        case Qt::Key_Space:
-            str = QString::fromUtf8( "Barra de espaço" );
-            break;
-        case Qt::Key_Enter:
-            str = "Enter";
-            break;
-        case Qt::Key_Backspace:
-            str = "Backspace";
-            break;
+        case Qt::Key_Down:      str = "Seta para baixo";                    break;
+        case Qt::Key_Up:        str = "Seta para cima";                     break;
+        case Qt::Key_Left:      str = "Seta para esquerda";                 break;
+        case Qt::Key_Right:     str = "Seta para direita";                  break;
+        case Qt::Key_Space:     str = QString::fromUtf8("Barra de espaço"); break;
+        case Qt::Key_Enter:     str = "Enter";                              break;
+        case Qt::Key_Backspace: str = "Backspace";                          break;
+        case Qt::Key_Home:      str = "Home";                               break;
+        case Qt::Key_End:       str = "End";                                break;
+        case Qt::Key_Insert:    str = "Insert";                             break;
+        case Qt::Key_Delete:    str = "Delete";                             break;
+        case Qt::Key_PageUp:    str = "Page Up";                            break;
+        case Qt::Key_PageDown:  str = "Page Down";                          break;
+        case Qt::Key_Escape:    str = "Esc";                                break;
+        case Qt::Key_F1:        str = "F1";                                 break;
+        case Qt::Key_F2:        str = "F2";                                 break;
+        case Qt::Key_F3:        str = "F3";                                 break;
+        case Qt::Key_F4:        str = "F4";                                 break;
+        case Qt::Key_F5:        str = "F5";                                 break;
+        case Qt::Key_F6:        str = "F6";                                 break;
+        case Qt::Key_F7:        str = "F7";                                 break;
+        case Qt::Key_F8:        str = "F8";                                 break;
+        case Qt::Key_F9:        str = "F9";                                 break;
+        case Qt::Key_F10:       str = "F10";                                break;
+        case Qt::Key_F11:       str = "F11";                                break;
+        case Qt::Key_F12:       str = "F12";                                break;
+        default:                str = "<tecla desconhecida>";               break;
         // TODO: teclas, teclas, e mais teclas aqui...
-        default:
-            str = "<tecla desconhecida>";
-            break;
     }
 
     return str;

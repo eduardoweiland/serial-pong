@@ -82,6 +82,8 @@ void MainWindow::deaccelerateBall()
 
 /**
  * Slot utilizado para exibir o diálogo sobre o aplicativo.
+ * Exibe uma caixa de diálogo com informações sobre o jogo e os seus
+ * desenvolvedores.
  */
 void MainWindow::about()
 {

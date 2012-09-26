@@ -1,9 +1,43 @@
 /**
- * Trabalho de Programação Orientada a Objetos I
- * Serial Pong (Futebol Simplificado)
+ * @mainpage Serial Pong (Futebol Simplificado Multiplayer)
  *
- * Eduardo Weiland
- * Wellington Camara Lopes
+ * ### Sobre
+ *
+ * Serial Pong (ou Futebol Simplificado Multiplayer) é um trabalho desenvolvido
+ * na disciplina de Programação Orientada a Objetos I. Trata-se de um jogo de
+ * futebol simplificado, para apenas dois jogadores (bem semelhante ao clássico
+ * jogo pong).
+ *
+ * ### Autores
+ *
+ * Esse trabalho foi desenvolvido por:
+ * - Eduardo Weiland
+ * - Wellington Camara Lopes
+ *
+ * ### Compilando
+ *
+ * O jogo utiliza o [framework Qt](http://qt-project.org/) para construir a
+ * interface gráfica. Para compilar o jogo é necessário instalar as ferramentas
+ * de desenvolvimento disponíveis para download no site oficial. É recomendável
+ * utilizar o Qt Creator.
+ *
+ * Se não quiser (ou não puder) utilizar o Qt Creator, os seguintes comandos
+ * devem funcionar (considerando um ambiente Unix):
+ *
+ *      $ cd /path/to/serial-pong
+ *      $ qmake serial-pong.pro
+ *      $ make
+ *      # make install
+ *      $ serial-pong
+ *
+ * Se você está em um ambiente Windows, então você realmente deve utilizar o
+ * Qt Creator.
+ *
+ * ### Executando
+ *
+ * Para poder executar o aplicativo são necessárias as bibliotecas dinâmicas do
+ * Qt. São necessárias apenas QtCore e QtGui. Se o QtCreator está instalado,
+ * então essas bibliotecas também devem estar.
  */
 
 #include <QtGui/QApplication>

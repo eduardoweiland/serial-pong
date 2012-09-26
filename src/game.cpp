@@ -3,14 +3,23 @@
 #include "gameoptions.h"
 #include "qextserialport.h"
 
+/**
+ * Construtor padrão.
+ * Cria um novo jogo, abrindo primeiro a tela de configuração.
+ */
 Game::Game()
 {
     GameOptions op;
     op.show();
 
- //   QObject::connect( &op, SIGNAL(accepted()), this, SLOT(play()) );
+    // classe não herda nenhuma classe do Qt então isso não funciona:
+    //QObject::connect( &op, SIGNAL(accepted()), this, SLOT(play()) );
 }
 
+/**
+ * Destrutor.
+ * Fecha a porta serial e libera a memória alocada pelos objetos.
+ */
 Game::~Game()
 {
     this->port->close();
@@ -29,8 +38,42 @@ void Game::play()
 }
 
 /**
+ * Define o modo de jogo.
+ * @see Game::GameMode
+ */
+void Game::setGameMode( GameMode mode )
+{
+    this->gameMode = mode;
+}
+
+/**
+ * Obtém o modo de jogo atual.
+ * @see Game::GameMode
+ */
+Game::GameMode Game::getGameMode() const
+{
+    return this->gameMode;
+}
+
+/**
+ * Define o nome da porta serial.
+ */
+void Game::setPortName( QString port )
+{
+    this->portName = port;
+}
+
+/**
+ * Obtém o nome da porta serial atual.
+ */
+QString Game::getPortName() const
+{
+    return this->portName;
+}
+
+/**
  * Método interno utilizado para configurar a porta serial.
- * Abre a porta definida em {@link ::portName} com as configurações padrão
+ * Abre a porta definida em Game::portName com as configurações padrão
  * utilizadas para o jogo.
  *
  * @note As configurações padrão são:
