@@ -3,12 +3,7 @@
 
 #include <QMainWindow>
 
-class QGraphicsRectItem;
-class QGraphicsScene;
-class QGraphicsView;
-class QTimer;
-class Ball;
-class QextSerialPort;
+class Game;
 
 namespace Ui
 {
@@ -34,18 +29,11 @@ public:
 
 private slots:
     void about();
-    void accelerateBall();
-    void deaccelerateBall();
+    void startNewGame();
 
 private:
     Ui::MainWindow * ui;
-    QTimer * timer;
-
-    QGraphicsScene * scene;
-    QGraphicsRectItem * field;
-
-    Ball * ball;
-    QextSerialPort * port;
+    Game * game;
 };
 
 #endif // MAINWINDOW_H

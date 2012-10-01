@@ -1,7 +1,6 @@
+#include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QPainter>
-#include <QStyleOption>
-#include <QDebug>
 
 #include <cmath>
 
@@ -10,7 +9,7 @@
 /**
  * Construtor padrão.
  * Inicializa as propriedades da classe com valores pré-definidos.
- * A bola padrão possui raio de 15 pixels e velocidade 3. O ângulo inicial é
+ * A bola padrão possui raio de 15 pixels e velocidade 6. O ângulo inicial é
  * randômico, e a bola sempre começa saindo apenas para a direita ou para a
  * esquerda.
  *
@@ -21,7 +20,7 @@ Ball::Ball() : QGraphicsItem()
     radius = 15;
     angle  = ((qrand() % 200) / 100.0) * M_PI;   // saída aleatória apenas para testes
     //angle  = (qrand() % 2) ? 0 : M_PI;   // saída para direita ou esquerda
-    speed  = 3;
+    speed  = 6;
 }
 
 /**
@@ -74,8 +73,7 @@ void Ball::advance( int phase )
     QRectF rect = scene()->sceneRect();
 
     // move a bola considerando o ângulo e a velocidade atuais
-    // o movimento é feito em números inteiros (facilita a comunicação serial)
-    moveBy( ( cos( angle ) * speed ), ( -sin( angle ) * speed ) );
+    moveBy( cos( angle ) * speed, -sin( angle ) * speed );
 
     // verifica se a bola bateu em alguma parede
     //   !! essas verificações são feitas depois de mover

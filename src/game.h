@@ -1,8 +1,12 @@
 #ifndef GAME_H
 #define GAME_H
 
-class QString;
+#include <QGraphicsView>
+
+class Ball;
 class QextSerialPort;
+class QString;
+class QTimer;
 
 /**
  * Define a estrutura utilizada na comunicação serial.
@@ -26,13 +30,13 @@ typedef struct {
  *
  * Essa classe é responsável por controlar todo o jogo e realizar a comunicação
  * serial entre os computadores.
- *
- * @todo implementar herança de QGraphicsScene ? a analisar...
  */
-class Game
+class Game : public QGraphicsView
 {
+    Q_OBJECT
+
 public:
-    Game();
+    explicit Game( QWidget * parent = 0 );
     ~Game();
 
     /**
@@ -51,16 +55,28 @@ public:
     QString getPortName() const;
     GameMode getGameMode() const;
 
+    bool isPlaying() const;
+
 public slots:
     void play();
+    void accelerate();
+    void deaccelerate();
 
 private:
+    // configurações do jogo
     QString portName;
     GameMode gameMode;
 
+    // controle do jogo
     QextSerialPort * port;
+    QTimer * timer;
+
+    // items do jogo
+    QGraphicsRectItem * field;
+    Ball * ball;
 
     void configureSerialPort();
+    void initializeConfig();
 };
 
 #endif // GAME_H
