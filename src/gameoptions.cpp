@@ -1,8 +1,10 @@
+#include <QDialog>
+#include <QKeyEvent>
+
 #include "gameoptions.h"
 #include "ui_gameoptions.h"
 #include "globals.h"
-
-#include <QKeyEvent>
+#include "game.h"
 
 /**
  * Construtor.
@@ -11,13 +13,14 @@
  * @todo O jogo só deve ser iniciado depois que os dois jogadores configurarem
  *       as opções nessa janela.
  */
-GameOptions::GameOptions( QWidget *parent ) :
+GameOptions::GameOptions( QWidget * parent ) :
     QDialog( parent ),
     ui( new Ui::GameOptions )
 {
-    ui->setupUi(this);
+    this->ui->setupUi( this );
 
-    ui->groupAdvanced->hide();
+    // oculta o modo avançado
+    this->ui->groupAdvanced->hide();
 
     // porta serial padrão
     ui->editSerialPort->setText( SERIALPORT );
@@ -25,9 +28,15 @@ GameOptions::GameOptions( QWidget *parent ) :
     // conecta signals e slots (eventos)
     connect( ui->btnMoveUp,   SIGNAL(toggled(bool)), this, SLOT(getMoveUpKey(bool)) );
     connect( ui->btnMoveDown, SIGNAL(toggled(bool)), this, SLOT(getMoveDownKey(bool)) );
-    connect( ui->btnExit,     SIGNAL(clicked()),     this, SLOT(close()) );
+    connect( ui->btnExit,     SIGNAL(clicked()),     this, SLOT(reject()) );
     connect( ui->btnPlay,     SIGNAL(clicked()),     this, SLOT(accept()) );
     connect( ui->btnAdvanced, SIGNAL(toggled(bool)), ui->groupAdvanced, SLOT(setVisible(bool)) );
+
+    // validações
+    connect( this->ui->rdbServerMode, SIGNAL(toggled(bool)), this, SLOT(validateConfig()) );
+    connect( this->ui->rdbClientMode, SIGNAL(toggled(bool)), this, SLOT(validateConfig()) );
+    connect( this->ui->btnMoveUp,     SIGNAL(toggled(bool)), this, SLOT(validateConfig()) );
+    connect( this->ui->btnMoveDown,   SIGNAL(toggled(bool)), this, SLOT(validateConfig()) );
 }
 
 /**
@@ -153,4 +162,19 @@ QString GameOptions::getKeyString( int code )
     }
 
     return str;
+}
+
+/**
+ * Método utilizado para validar as configurações e habilitar ou desabilitar o
+ * botão "Play" conforme a condição atual.
+ *
+ * O método é um slot para permitir conectá-lo diretamente aos signals enviados
+ * pelos itens da interface.
+ *
+ * @notes
+ */
+void GameOptions::validateConfig()
+{
+    bool valid = true;
+    this->ui->btnPlay->setDisabled(!valid);
 }

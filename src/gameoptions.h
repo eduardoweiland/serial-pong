@@ -2,6 +2,7 @@
 #define GAMEOPTIONS_H
 
 #include <QDialog>
+#include "game.h"
 
 class QString;
 
@@ -23,12 +24,13 @@ class GameOptions : public QDialog
     Q_OBJECT
 
 public:
-    explicit GameOptions(QWidget *parent = 0);
+    explicit GameOptions( QWidget * parent = 0 );
     ~GameOptions();
 
 private slots:
     void getMoveUpKey( bool pressed );
     void getMoveDownKey( bool pressed );
+    void validateConfig();
 
 private:
     void keyPressEvent( QKeyEvent * event );

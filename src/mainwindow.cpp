@@ -1,11 +1,9 @@
 #include <QMessageBox>
-#include <QTimer>
-#include <QDebug>
+#include <QMainWindow>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ball.h"
-#include "globals.h"
+#include "game.h"
 
 /**
  * Construtor.
@@ -18,35 +16,17 @@ MainWindow::MainWindow( QWidget * parent ) :
     ui( new Ui::MainWindow )
 {
     // carrega a interface
-    ui->setupUi( this );
+    this->ui->setupUi( this );
+
+    this->game = new Game( this );
+    this->setCentralWidget( this->game );
 
     // conecta sinais e slots (eventos)
-    connect( ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()) );
-    connect( ui->actionSpeedPlus, SIGNAL(triggered()), this, SLOT(accelerateBall()) );
-    connect( ui->actionSpeedMinus, SIGNAL(triggered()), this, SLOT(deaccelerateBall()) );
-    connect( ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()) );
-
-    // cria a cena para conter todos os itens do jogo.
-    scene = new QGraphicsScene( 0, 0, 1000, 500 );
-    scene->setBackgroundBrush( Qt::black );
-
-    // o campo do jogo (a bola não deve sair dele)
-    field = new QGraphicsRectItem( 0, 0, 1000, 500 );
-    field->setBrush( Qt::darkGreen );
-    scene->addItem( field );
-
-    // cria a bola e adiciona na cena
-    ball = new Ball();
-    ball->setPos( scene->width() / 2, scene->height() / 2 );
-    scene->addItem( ball );
-
-    ui->graphicsView->setScene( scene );
-
-    // inicializa o contador de frames
-    // TODO: esperar o jogo começar para fazer isso
-    timer = new QTimer( this );
-    connect( timer, SIGNAL(timeout()), scene, SLOT(advance()) );
-    timer->start( 1000 / 20 );  // 20 FPS
+    connect( this->ui->actionNewGame,    SIGNAL(triggered()), this,       SLOT(startNewGame()) );
+    connect( this->ui->actionQuit,       SIGNAL(triggered()), this,       SLOT(close()) );
+    connect( this->ui->actionAbout,      SIGNAL(triggered()), this,       SLOT(about()) );
+    connect( this->ui->actionSpeedPlus,  SIGNAL(triggered()), this->game, SLOT(accelerate()) );
+    connect( this->ui->actionSpeedMinus, SIGNAL(triggered()), this->game, SLOT(deaccelerate()) );
 }
 
 /**
@@ -55,29 +35,8 @@ MainWindow::MainWindow( QWidget * parent ) :
  */
 MainWindow::~MainWindow()
 {
-    delete ui;
-    delete timer;
-    delete field;
-    delete ball;
-    delete scene;
-}
-
-/**
- * Slot utilizado para aumentar a velocidade da bola.
- * Recebe os eventos tanto do botão quanto da tecla de atalho.
- */
-void MainWindow::accelerateBall()
-{
-    ball->accelerate();
-}
-
-/**
- * Slot utilizado para diminuir a velocidade da bola.
- * Recebe os eventos tanto do botão quanto da tecla de atalho.
- */
-void MainWindow::deaccelerateBall()
-{
-    ball->deaccelerate();
+    delete this->ui;
+    delete this->game;
 }
 
 /**
@@ -93,4 +52,16 @@ void MainWindow::about()
     msg += "<ul><li>Eduardo Weiland</li><li>Wellington Camara Lopes</li></ul>";
 
     QMessageBox::about( this, "Sobre o jogo", msg );
+}
+
+void MainWindow::startNewGame()
+{
+    if ( NULL != this->game ) {
+        if ( this->game->isPlaying() ) {
+            return;
+        }
+        delete this->game;
+    }
+    this->game = new Game( this );
+    this->setCentralWidget( this->game );
 }

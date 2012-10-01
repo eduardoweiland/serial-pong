@@ -25,10 +25,9 @@
  * devem funcionar (considerando um ambiente Unix):
  *
  *      $ cd /path/to/serial-pong
- *      $ qmake serial-pong.pro
+ *      $ qmake serial-pong.pro   ## dependendo do ambiente o comando pode ser qmake-qt4
  *      $ make
- *      # make install
- *      $ serial-pong
+ *      $ ./serial-pong
  *
  * Se você está em um ambiente Windows, então você realmente deve utilizar o
  * Qt Creator.
@@ -64,15 +63,13 @@ int main( int argc, char ** argv )
 
     QApplication app( argc, argv );
     app.setApplicationName( "Serial Pong" );
-    app.setApplicationVersion( "0.0.0.0.0.0.1 pre-pre-pre-alpha" );
+    app.setApplicationVersion( "0.0.1 pre-alpha" );
     app.setOrganizationName( "Eduardo & Wellington softwares" ); // :D
 
     // exibe a janela principal maximizada
     MainWindow win;
     win.showMaximized();
 
-    GameOptions * go = new GameOptions();
-    go->show();
-
+    // Loop principal: só sai quando a janela for fechada
     return app.exec();
 }

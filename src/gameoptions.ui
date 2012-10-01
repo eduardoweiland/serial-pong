@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>429</width>
-    <height>288</height>
+    <height>311</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -112,6 +112,9 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="margin">
