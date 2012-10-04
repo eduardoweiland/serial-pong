@@ -18,6 +18,7 @@ MainWindow::MainWindow( QWidget * parent ) :
     // carrega a interface
     this->ui->setupUi( this );
 
+    // TODO: primeiro configurar o jogo, depois criar!!
     this->game = new Game( this );
     this->setCentralWidget( this->game );
 

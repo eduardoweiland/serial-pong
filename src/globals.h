@@ -15,4 +15,7 @@
 # define SERIALPORT "/dev/ttyS1"
 #endif
 
+
+#define ERR_BAD_MODE 0x002
+
 #endif // GLOBALS_H

@@ -62,6 +62,10 @@ public slots:
     void accelerate();
     void deaccelerate();
 
+private slots:
+    void playOnServer();
+    void playOnClient();
+
 private:
     // configurações do jogo
     QString portName;

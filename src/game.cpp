@@ -1,9 +1,11 @@
 #include <QGraphicsView>
 #include <QTimer>
+#include <QDebug>
 
 #include "ball.h"
 #include "game.h"
 #include "gameoptions.h"
+#include "globals.h"
 #include "qextserialport.h"
 
 /**
@@ -17,13 +19,16 @@
 Game::Game( QWidget * parent ) :
     QGraphicsView( new QGraphicsScene( 0, 0, 1000, 500 ), parent )
 {
-    this->port = NULL;
-    this->timer = NULL;
+    this->port     = NULL;
+    this->portName = SERIALPORT;
+    this->timer    = NULL;
+    this->gameMode = CLIENT;
     this->initializeConfig();
 
     GameOptions * op = new GameOptions( this );
     op->show();
 
+    // TODO: trazer as configurações do jogo
     connect( op, SIGNAL(accepted()), this, SLOT(play()) );
 
     // cria a cena para conter todos os itens do jogo.
@@ -50,6 +55,10 @@ Game::~Game()
         this->port->close();
         delete this->port;
     }
+
+    delete this->timer;
+    delete this->field;
+    delete this->ball;
 }
 
 /**
@@ -86,7 +95,19 @@ void Game::play()
 
     // inicializa o contador de frames
     this->timer = new QTimer( this );
-    connect( this->timer, SIGNAL(timeout()), this->scene(), SLOT(advance()) );
+
+    // conecta o sinal timeout do contador com o slot do servidor
+    if ( SERVER == this->gameMode ) {
+        connect( this->timer, SIGNAL(timeout()), this, SLOT(playOnServer()) );
+    }
+    else if ( CLIENT == this->gameMode ) {
+        connect( this->timer, SIGNAL(timeout()), this, SLOT(playOnClient()) );
+    }
+    else {
+        exit( ERR_BAD_MODE );
+    }
+
+    //connect( this->timer, SIGNAL(timeout()), this->scene(), SLOT(advance()) );
     this->timer->start( 1000 / 20 );  // 20 FPS
 
     // Locutor: bola rolando, começa o jogo do Servidor X Cliente aqui no estádio do Qt ;-)
@@ -122,6 +143,7 @@ void Game::setGameMode( GameMode mode )
 /**
  * Obtém o modo de jogo atual.
  * @see Game::GameMode
+ * @return Se o jogo foi (ou vai ser) iniciado em modo servidor ou modo cliente.
  */
 Game::GameMode Game::getGameMode() const
 {
@@ -138,12 +160,20 @@ void Game::setPortName( QString port )
 
 /**
  * Obtém o nome da porta serial atual.
+ * @return O nome da porta configurada.
  */
 QString Game::getPortName() const
 {
     return this->portName;
 }
 
+/**
+ * Verifica se o jogo está ativo ou não.
+ *
+ * @return O método retorna false se nenhum jogo foi iniciado ou se o jogo já
+ *         foi finalizado.
+ *
+ */
 bool Game::isPlaying() const
 {
     return ( NULL != this->timer && this->timer->isActive() );
@@ -179,4 +209,44 @@ void Game::configureSerialPort()
     this->port->setFlowControl( FLOW_OFF );
     this->port->setTimeout( 200 );
     this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered );
+}
+
+
+void Game::playOnServer()
+{
+    // jogo só pode ser jogado com a conexão estabelecida
+    if ( this->port == NULL || !this->port->isOpen() ) {
+        return;
+    }
+
+    // realiza os cálculos no servidor
+    this->scene()->advance();
+
+    // envia os novos dados para o cliente
+    QByteArray data;
+    GameControl info = {};
+    info.ballX       = this->ball->x();
+    info.ballY       = this->ball->y();
+    info.playerLeft  = 0;    // TODO
+    info.playerRight = 0;    // TODO
+    info.scoreLeft   = 0;    // TODO
+    info.scoreRight  = 0;    // TODO
+    info.gameSeconds = 0;    // TODO
+
+    data.setRawData( (char*) &info, sizeof(GameControl) );
+    this->port->write(data);
+}
+
+void Game::playOnClient()
+{
+    // jogo só pode ser jogado com a conexão estabelecida
+    if ( this->port == NULL || !this->port->isOpen() ) {
+        return;
+    }
+
+    QByteArray read = this->port->read( sizeof(GameControl) );
+    GameControl * info = (GameControl*) read.data();
+
+    this->ball->setX( info->ballX );
+    this->ball->setY( info->ballY );
 }
