@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "game.h"
+#include "gameoptions.h"
 
 /**
  * Construtor.
@@ -18,16 +19,14 @@ MainWindow::MainWindow( QWidget * parent ) :
     // carrega a interface
     this->ui->setupUi( this );
 
-    // TODO: primeiro configurar o jogo, depois criar!!
-    this->game = new Game( this );
-    this->setCentralWidget( this->game );
+    this->game = NULL;
+    this->op   = NULL;
 
     // conecta sinais e slots (eventos)
-    connect( this->ui->actionNewGame,    SIGNAL(triggered()), this,       SLOT(startNewGame()) );
-    connect( this->ui->actionQuit,       SIGNAL(triggered()), this,       SLOT(close()) );
-    connect( this->ui->actionAbout,      SIGNAL(triggered()), this,       SLOT(about()) );
-    connect( this->ui->actionSpeedPlus,  SIGNAL(triggered()), this->game, SLOT(accelerate()) );
-    connect( this->ui->actionSpeedMinus, SIGNAL(triggered()), this->game, SLOT(deaccelerate()) );
+    connect( this->ui->actionNewGame, SIGNAL(triggered()), this, SLOT(startNewGame()) );
+    connect( this->ui->actionQuit,    SIGNAL(triggered()), this, SLOT(close()) );
+    connect( this->ui->actionAbout,   SIGNAL(triggered()), this, SLOT(about()) );
+
 }
 
 /**
@@ -57,12 +56,28 @@ void MainWindow::about()
 
 void MainWindow::startNewGame()
 {
+    if ( NULL == this->op ) {
+        this->op = new GameOptions( this );
+        connect( this->op, SIGNAL(accepted()), this, SLOT(startNewGame()) );
+        return;
+    }
+
     if ( NULL != this->game ) {
         if ( this->game->isPlaying() ) {
             return;
         }
         delete this->game;
+        this->game = NULL;
     }
+
     this->game = new Game( this );
     this->setCentralWidget( this->game );
+
+    // carrega as configurações
+    this->game->setPortName( this->op->getSerialPort() );
+    delete this->op;
+    this->op = NULL;
+
+    connect( this->ui->actionSpeedPlus,  SIGNAL(triggered()), this->game, SLOT(accelerate()) );
+    connect( this->ui->actionSpeedMinus, SIGNAL(triggered()), this->game, SLOT(deaccelerate()) );
 }

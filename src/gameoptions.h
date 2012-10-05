@@ -27,19 +27,33 @@ public:
     explicit GameOptions( QWidget * parent = 0 );
     ~GameOptions();
 
+    // getters
+    QString getSerialPort();
+    Qt::Key getMoveUpKey();
+    Qt::Key getMoveDownKey();
+    Game::GameMode getGameMode();
+
+    // setters
+    void setSerialPort( QString portName );
+    void setMoveUpKey( Qt::Key keyCode );
+    void setMoveDownKey( Qt::Key keyCode );
+    void setGameMode( Game::GameMode mode );
+
 private slots:
-    void getMoveUpKey( bool pressed );
-    void getMoveDownKey( bool pressed );
+    void btnMoveUpToggled( bool pressed );
+    void btnMoveDownToggled( bool pressed );
     void validateConfig();
 
 private:
     void keyPressEvent( QKeyEvent * event );
     QString getKeyString( int code );
 
-    Ui::GameOptions *ui;
+    Ui::GameOptions * ui;
+    Qt::Key moveUpKeyCode;
+    Qt::Key moveDownKeyCode;
 
+    // usado apenas para controlar a tecla que for pressionada
     short int grabbingKey;
-
     const static short int BTN_MOVEUP   = 0;
     const static short int BTN_MOVEDOWN = 1;
 };
