@@ -23,14 +23,14 @@ GameOptions::GameOptions( QWidget * parent ) :
     this->ui->groupAdvanced->hide();
 
     // porta serial padrão
-    ui->editSerialPort->setText( SERIALPORT );
+    this->ui->editSerialPort->setText( SERIALPORT );
 
     // conecta signals e slots (eventos)
-    connect( ui->btnMoveUp,   SIGNAL(toggled(bool)), this, SLOT(getMoveUpKey(bool)) );
-    connect( ui->btnMoveDown, SIGNAL(toggled(bool)), this, SLOT(getMoveDownKey(bool)) );
-    connect( ui->btnExit,     SIGNAL(clicked()),     this, SLOT(reject()) );
-    connect( ui->btnPlay,     SIGNAL(clicked()),     this, SLOT(accept()) );
-    connect( ui->btnAdvanced, SIGNAL(toggled(bool)), ui->groupAdvanced, SLOT(setVisible(bool)) );
+    connect( this->ui->btnMoveUp,   SIGNAL(toggled(bool)), this, SLOT(btnMoveUpToggled(bool)) );
+    connect( this->ui->btnMoveDown, SIGNAL(toggled(bool)), this, SLOT(btnMoveDownToggled(bool)) );
+    connect( this->ui->btnExit,     SIGNAL(clicked()),     this, SLOT(reject()) );
+    connect( this->ui->btnPlay,     SIGNAL(clicked()),     this, SLOT(accept()) );
+    connect( this->ui->btnAdvanced, SIGNAL(toggled(bool)), this->ui->groupAdvanced, SLOT(setVisible(bool)) );
 
     // validações
     connect( this->ui->rdbServerMode, SIGNAL(toggled(bool)), this, SLOT(validateConfig()) );
@@ -54,7 +54,7 @@ GameOptions::~GameOptions()
  *
  * @param pressed Se o botão foi pressionado ou despressionado.
  */
-void GameOptions::getMoveUpKey( bool pressed )
+void GameOptions::btnMoveUpToggled( bool pressed )
 {
     if ( pressed ) {
         ui->btnMoveDown->setChecked( false );
@@ -72,7 +72,7 @@ void GameOptions::getMoveUpKey( bool pressed )
  *
  * @param pressed Se o botão foi pressionado ou despressionado.
  */
-void GameOptions::getMoveDownKey( bool pressed )
+void GameOptions::btnMoveDownToggled( bool pressed )
 {
     if ( pressed ) {
         ui->btnMoveUp->setChecked( false );
@@ -177,4 +177,54 @@ void GameOptions::validateConfig()
 {
     bool valid = true;
     this->ui->btnPlay->setDisabled(!valid);
+}
+
+QString GameOptions::getSerialPort()
+{
+    return this->ui->editSerialPort->text();
+}
+
+void GameOptions::setSerialPort( QString portName )
+{
+    this->ui->editSerialPort->setText( portName );
+}
+
+Qt::Key GameOptions::getMoveUpKey()
+{
+    return this->moveUpKeyCode;
+}
+
+void GameOptions::setMoveUpKey( Qt::Key keyCode )
+{
+    this->moveUpKeyCode = keyCode;
+    this->ui->btnMoveUp->setText( this->getKeyString( keyCode ) );
+}
+
+Qt::Key GameOptions::getMoveDownKey()
+{
+    return this->moveDownKeyCode;
+}
+
+void GameOptions::setMoveDownKey( Qt::Key keyCode )
+{
+    this->moveDownKeyCode = keyCode;
+    this->ui->btnMoveDown->setText( this->getKeyString( keyCode ) );
+}
+
+Game::GameMode GameOptions::getGameMode()
+{
+    if ( this->ui->rdbServerMode->isChecked() ) {
+        return Game::SERVER;
+    }
+    else if ( this->ui->rdbClientMode->isChecked() ) {
+        return Game::CLIENT;
+    }
+
+    return Game::UNKNOWN;
+}
+
+void GameOptions::setGameMode( Game::GameMode mode )
+{
+    this->ui->rdbServerMode->setChecked( Game::SERVER == mode );
+    this->ui->rdbClientMode->setChecked( Game::CLIENT == mode );
 }

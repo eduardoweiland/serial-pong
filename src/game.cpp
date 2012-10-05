@@ -1,6 +1,8 @@
 #include <QGraphicsView>
+#include <QTime>
 #include <QTimer>
 #include <QDebug>
+#include <QMessageBox>
 
 #include "ball.h"
 #include "game.h"
@@ -22,6 +24,7 @@ Game::Game( QWidget * parent ) :
     this->port     = NULL;
     this->portName = SERIALPORT;
     this->timer    = NULL;
+    this->gameTime = NULL;
     this->gameMode = CLIENT;
     this->initializeConfig();
 
@@ -95,6 +98,7 @@ void Game::play()
 
     // inicializa o contador de frames
     this->timer = new QTimer( this );
+    this->gameTime = new QTime();
 
     // conecta o sinal timeout do contador com o slot do servidor
     if ( SERVER == this->gameMode ) {
@@ -107,8 +111,8 @@ void Game::play()
         exit( ERR_BAD_MODE );
     }
 
-    //connect( this->timer, SIGNAL(timeout()), this->scene(), SLOT(advance()) );
     this->timer->start( 1000 / 20 );  // 20 FPS
+    this->gameTime->start();          // tempo de jogo
 
     // Locutor: bola rolando, começa o jogo do Servidor X Cliente aqui no estádio do Qt ;-)
 }
@@ -185,8 +189,8 @@ bool Game::isPlaying() const
  * utilizadas para o jogo.
  *
  * @note As configurações padrão são:
- *  - Baud rate         = 38400
- *  - Bits de dados     = 7
+ *  - Baud rate         = 57600
+ *  - Bits de dados     = 8
  *  - Paridade          = nenhuma
  *  - Bits de parada    = 1
  *  - Controle de fluxo = nenhum
@@ -201,9 +205,9 @@ void Game::configureSerialPort()
         delete this->port;
     }
 
-    this->port = new QextSerialPort( this->portName, QextSerialPort::EventDriven );
-    this->port->setBaudRate( BAUD38400 );
-    this->port->setDataBits( DATA_7 );
+    this->port = new QextSerialPort( this->portName, QextSerialPort::Polling );
+    this->port->setBaudRate( BAUD57600 );
+    this->port->setDataBits( DATA_8 );
     this->port->setParity( PAR_NONE );
     this->port->setStopBits( STOP_1 );
     this->port->setFlowControl( FLOW_OFF );
@@ -231,7 +235,7 @@ void Game::playOnServer()
     info.playerRight = 0;    // TODO
     info.scoreLeft   = 0;    // TODO
     info.scoreRight  = 0;    // TODO
-    info.gameSeconds = 0;    // TODO
+    info.gameSeconds = this->gameTime->elapsed() / 1000;
 
     data.setRawData( (char*) &info, sizeof(GameControl) );
     this->port->write(data);
@@ -240,7 +244,13 @@ void Game::playOnServer()
 void Game::playOnClient()
 {
     // jogo só pode ser jogado com a conexão estabelecida
-    if ( this->port == NULL || !this->port->isOpen() ) {
+    if ( this->port == NULL || !this->port->isOpen() || this->port->bytesAvailable() < sizeof(GameControl) ) {
+        // se o jogo já estava ocorrendo, então a conexão foi perdida
+        if ( this->isPlaying() ) {
+           // QMessageBox::critical( this, QString::fromUtf8( "Conexão perdida" ),
+           //     QString::fromUtf8( "A conexão com o servidor foi perdida, tente novamente mais tarde" ) );
+           // this->timer->stop();
+        }
         return;
     }
 
@@ -249,4 +259,6 @@ void Game::playOnClient()
 
     this->ball->setX( info->ballX );
     this->ball->setY( info->ballY );
+
+    qDebug() << info->gameSeconds;
 }

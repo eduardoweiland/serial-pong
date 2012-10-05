@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 class Game;
+class GameOptions;
 
 namespace Ui
 {
@@ -34,6 +35,7 @@ private slots:
 private:
     Ui::MainWindow * ui;
     Game * game;
+    GameOptions * op;
 };
 
 #endif // MAINWINDOW_H

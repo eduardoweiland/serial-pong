@@ -44,7 +44,8 @@ public:
      */
     enum GameMode {
         SERVER, /**< O jogo será iniciado no modo servidor. */
-        CLIENT  /**< O jogo será iniciado no modo cliente. */
+        CLIENT, /**< O jogo será iniciado no modo cliente. */
+        UNKNOWN /**< Modo desconhecido. Usado para indicar algum erro ou configuração incompleta. */
     };
 
     // setters
@@ -52,7 +53,7 @@ public:
     void setGameMode( GameMode mode );
 
     // getters
-    QString getPortName() const;
+    QString  getPortName() const;
     GameMode getGameMode() const;
 
     bool isPlaying() const;
@@ -68,16 +69,17 @@ private slots:
 
 private:
     // configurações do jogo
-    QString portName;
+    QString  portName;
     GameMode gameMode;
 
     // controle do jogo
     QextSerialPort * port;
-    QTimer * timer;
+    QTimer         * timer;
+    QTime          * gameTime;
 
     // items do jogo
     QGraphicsRectItem * field;
-    Ball * ball;
+    Ball              * ball;
 
     void configureSerialPort();
     void initializeConfig();
