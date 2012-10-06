@@ -1,5 +1,6 @@
 #include <QMessageBox>
 #include <QMainWindow>
+#include <QDebug>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -27,6 +28,7 @@ MainWindow::MainWindow( QWidget * parent ) :
     connect( this->ui->actionQuit,    SIGNAL(triggered()), this, SLOT(close()) );
     connect( this->ui->actionAbout,   SIGNAL(triggered()), this, SLOT(about()) );
 
+    this->startNewGame();
 }
 
 /**
@@ -58,6 +60,7 @@ void MainWindow::startNewGame()
 {
     if ( NULL == this->op ) {
         this->op = new GameOptions( this );
+        op->show();
         connect( this->op, SIGNAL(accepted()), this, SLOT(startNewGame()) );
         return;
     }
@@ -69,6 +72,8 @@ void MainWindow::startNewGame()
         delete this->game;
         this->game = NULL;
     }
+
+    op->close();
 
     this->game = new Game( this );
     this->setCentralWidget( this->game );
