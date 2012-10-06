@@ -1,21 +1,19 @@
-/**
- * Arquivo com definições globais, acessíveis a todos os arquivos do projeto.
- */
-
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
 /**
  * @def SERIALPORT
- *      Define o nome da porta serial que deve ser utilizada para se conectar.
+ * Define o nome da porta serial padrão para se conectar.
+ * Em sistemas Windows, o padrão é COM1
  */
 #ifdef Q_OS_WIN
-# define SERIALPORT "COM2"
+# define SERIALPORT "COM1"
 #else
-# define SERIALPORT "/dev/ttyS1"
+# define SERIALPORT "/dev/ttyS0"
 #endif
 
-
-#define ERR_BAD_MODE 0x002
+#define ERR_NO_ERROR      0x0000
+#define ERR_SERIAL_ERROR  0x0001
+#define ERR_BAD_GAME_MODE 0x0002
 
 #endif // GLOBALS_H
