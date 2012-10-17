@@ -29,4 +29,5 @@ HEADERS += src/mainwindow.h \
 FORMS += src/mainwindow.ui \
          src/gameoptions.ui
 
-RESOURCES += resources/icons.qrc
+RESOURCES += resources/icons.qrc \
+    resources/pixmaps.qrc
