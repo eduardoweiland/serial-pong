@@ -47,8 +47,9 @@ QRectF Ball::boundingRect() const
  */
 void Ball::paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget )
 {
-    painter->setBrush( Qt::white );
-    painter->drawEllipse( -radius, -radius, radius * 2, radius * 2 );
+//    painter->setBrush( Qt::white );
+//    painter->drawEllipse( -radius, -radius, radius * 2, radius * 2 );
+    painter->drawPixmap( -radius, -radius, radius * 2, radius * 2, QPixmap( ":/ball.png" ) );
 }
 
 /**
@@ -94,7 +95,7 @@ void Ball::advance( int phase )
  */
 void Ball::hitLeftWall()
 {
-    setX(scene()->sceneRect().left() + radius);
+    setX( scene()->sceneRect().left() + radius + 1 );
     angle = M_PI - angle;
 }
 
@@ -108,7 +109,7 @@ void Ball::hitLeftWall()
  */
 void Ball::hitRightWall()
 {
-    setX(scene()->sceneRect().right() - radius);
+    setX( scene()->sceneRect().right() - radius - 1 );
     angle = M_PI - angle;
 }
 
@@ -122,7 +123,7 @@ void Ball::hitRightWall()
  */
 void Ball::hitTopWall()
 {
-    setY(scene()->sceneRect().top() + radius);
+    setY( scene()->sceneRect().top() + radius + 1 );
     angle = 2 * M_PI - angle;
 }
 
@@ -136,7 +137,7 @@ void Ball::hitTopWall()
  */
 void Ball::hitBottomWall()
 {
-    setY(scene()->sceneRect().bottom() - radius);
+    setY( scene()->sceneRect().bottom() - radius - 1 );
     angle = 2 * M_PI - angle;
 }
 
