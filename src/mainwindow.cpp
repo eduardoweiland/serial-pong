@@ -3,9 +3,10 @@
 #include <QDebug>
 
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "ui_mainwindow.h"      // gerado pelo Qt a partir de mainwindow.ui
 #include "game.h"
 #include "gameoptions.h"
+#include "scoreboard.h"
 
 /**
  * Construtor.
@@ -23,6 +24,9 @@ MainWindow::MainWindow( QWidget * parent ) :
     this->game = NULL;
     this->op   = NULL;
 
+    this->scoreBoard = new ScoreBoard( this );
+    this->ui->centralLayout->addWidget( this->scoreBoard );
+
     // conecta sinais e slots (eventos)
     connect( this->ui->actionNewGame, SIGNAL(triggered()), this, SLOT(startNewGame()) );
     connect( this->ui->actionQuit,    SIGNAL(triggered()), this, SLOT(close()) );
@@ -39,10 +43,12 @@ MainWindow::~MainWindow()
 {
     delete this->ui;
     delete this->game;
+    delete this->op;
 }
 
 /**
  * Slot utilizado para exibir o diálogo sobre o aplicativo.
+ *
  * Exibe uma caixa de diálogo com informações sobre o jogo e os seus
  * desenvolvedores.
  */
@@ -56,19 +62,37 @@ void MainWindow::about()
     QMessageBox::about( this, "Sobre o jogo", msg );
 }
 
+void MainWindow::closeConfigDialog( int status )
+{
+    if ( QDialog::Accepted != status ) {
+        this->op->close();
+        this->op = NULL;
+    }
+}
+
+/**
+ * Slot utilizado para iniciar um novo jogo.
+ *
+ * É conectado ao evento triggered da ação de "Novo jogo", e é o responsável por
+ * realizar todas as operações necessárias para iniciar uma nova partida.
+ */
 void MainWindow::startNewGame()
 {
+    // não pode iniciar um novo jogo se já existe um execução
+    if ( NULL != this->game && this->game->isPlaying() ) {
+        return;
+    }
+
+    // cria a tela de configurações
     if ( NULL == this->op ) {
         this->op = new GameOptions( this );
         op->show();
-        connect( this->op, SIGNAL(accepted()), this, SLOT(startNewGame()) );
+        connect( this->op, SIGNAL(accepted()),    this, SLOT(startNewGame()) );
+        connect( this->op, SIGNAL(finished(int)), this, SLOT(closeConfigDialog(int)) );
         return;
     }
 
     if ( NULL != this->game ) {
-        if ( this->game->isPlaying() ) {
-            return;
-        }
         delete this->game;
         this->game = NULL;
     }
@@ -76,13 +100,20 @@ void MainWindow::startNewGame()
     op->close();
 
     this->game = new Game( this );
-    this->setCentralWidget( this->game );
+    this->ui->centralLayout->addWidget( this->game, 1 );
+//    this->setCentralWidget( this->game );
 
     // carrega as configurações
     this->game->setPortName( this->op->getSerialPort() );
+    this->game->setGameMode( this->op->getGameMode() );
+    //TODO: this->op->getMoveUpKey();
+    //TODO: this->op->getMoveDownKey();
     delete this->op;
     this->op = NULL;
 
     connect( this->ui->actionSpeedPlus,  SIGNAL(triggered()), this->game, SLOT(accelerate()) );
     connect( this->ui->actionSpeedMinus, SIGNAL(triggered()), this->game, SLOT(deaccelerate()) );
+
+    // Vamos jogar!
+    this->game->play();
 }

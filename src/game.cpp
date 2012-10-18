@@ -1,4 +1,5 @@
 #include <QGraphicsView>
+#include <QKeyEvent>
 #include <QTime>
 #include <QTimer>
 #include <QDebug>
@@ -8,6 +9,7 @@
 #include "game.h"
 #include "globals.h"
 #include "qextserialport.h"
+//#include "scoreboard.h"
 
 /**
  * Construtor padrão.
@@ -20,11 +22,14 @@
 Game::Game( QWidget * parent ) :
     QGraphicsView( new QGraphicsScene( 0, 0, 1000, 500 ), parent )
 {
-    this->port     = NULL;
-    this->portName = SERIALPORT;
-    this->timer    = NULL;
-    this->gameTime = NULL;
-    this->gameMode = SERVER;
+    this->port            = NULL;
+    this->portName        = SERIALPORT;
+    this->timer           = NULL;
+    this->gameTime        = NULL;
+    this->gameMode        = UNKNOWN;
+    this->moveUpKeyCode   = Qt::Key_Down;
+    this->moveDownKeyCode = Qt::Key_Up;
+
     this->initializeConfig();
 
     // cria a cena para conter todos os itens do jogo.
@@ -53,6 +58,7 @@ Game::~Game()
     }
 
     delete this->timer;
+    delete this->gameTime;
     delete this->field;
     delete this->ball;
 }
@@ -104,8 +110,11 @@ void Game::play()
         exit( ERR_BAD_GAME_MODE );
     }
 
-    //connect( this->timer, SIGNAL(timeout()), this->scene(), SLOT(advance()) );
     this->timer->start( 1000 / 20 );  // 20 FPS
+    this->gameTime->start();
+
+    // captura o teclado para esperar pelas teclas de controle do jogador
+    this->grabKeyboard();
 
     // Locutor: bola rolando, começa o jogo do Servidor X Cliente aqui no estádio do Qt ;-)
 }
@@ -182,8 +191,8 @@ bool Game::isPlaying() const
  * utilizadas para o jogo.
  *
  * @note As configurações padrão são:
- *  - Baud rate         = 38400
- *  - Bits de dados     = 7
+ *  - Baud rate         = 57.600 bauds
+ *  - Bits de dados     = 8
  *  - Paridade          = nenhuma
  *  - Bits de parada    = 1
  *  - Controle de fluxo = nenhum
@@ -210,6 +219,17 @@ void Game::configureSerialPort()
     qDebug() << this->portName;
 }
 
+void Game::keyPressEvent( QKeyEvent * event )
+{
+    if ( this->moveUpKeyCode == event->key() ) {
+        event->accept();
+        qDebug() << "Pra cima";
+    }
+    else if ( this->moveDownKeyCode == event->key() ) {
+        event->accept();
+        qDebug() << "Pra baixo";
+    }
+}
 
 void Game::playOnServer()
 {
@@ -230,7 +250,7 @@ void Game::playOnServer()
     info.playerRight = 0;    // TODO
     info.scoreLeft   = 0;    // TODO
     info.scoreRight  = 0;    // TODO
-    info.gameSeconds = 0;    // TODO
+    info.gameSeconds = this->gameTime->elapsed() / 1000;    // TODO
 
     data.setRawData( (char*) &info, sizeof(GameControl) );
     this->port->write(data);

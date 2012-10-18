@@ -18,6 +18,9 @@
     <property name="margin">
      <number>0</number>
     </property>
+    <item>
+     <layout class="QVBoxLayout" name="centralLayout"/>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">

@@ -71,6 +71,8 @@ private:
     // configurações do jogo
     QString  portName;
     GameMode gameMode;
+    Qt::Key  moveUpKeyCode;
+    Qt::Key  moveDownKeyCode;
 
     // controle do jogo
     QextSerialPort * port;
@@ -81,6 +83,7 @@ private:
     QGraphicsRectItem * field;
     Ball              * ball;
 
+    void keyPressEvent( QKeyEvent * event );
     void configureSerialPort();
     void initializeConfig();
 };

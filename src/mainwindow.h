@@ -5,6 +5,7 @@
 
 class Game;
 class GameOptions;
+class ScoreBoard;
 
 namespace Ui
 {
@@ -30,12 +31,14 @@ public:
 
 private slots:
     void about();
+    void closeConfigDialog( int status );
     void startNewGame();
 
 private:
     Ui::MainWindow * ui;
     Game * game;
     GameOptions * op;
+    ScoreBoard * scoreBoard;
 };
 
 #endif // MAINWINDOW_H
