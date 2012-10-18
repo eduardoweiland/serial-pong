@@ -76,6 +76,8 @@ void Ball::advance( int phase )
     // move a bola considerando o ângulo e a velocidade atuais
     moveBy( cos( angle ) * speed, -sin( angle ) * speed );
 
+    this->setRotation(this->rotation()+(speed*2*cos(angle)));
+
     // verifica se a bola bateu em alguma parede
     //   !! essas verificações são feitas depois de mover
     //   !! e valem apenas para o próximo frame

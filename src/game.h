@@ -7,6 +7,7 @@ class Ball;
 class QextSerialPort;
 class QString;
 class QTimer;
+class Player;
 
 /**
  * Define a estrutura utilizada na comunicação serial.
@@ -82,6 +83,9 @@ private:
     // items do jogo
     QGraphicsRectItem * field;
     Ball              * ball;
+    Player            * player1;
+    Player            * player2;
+
 
     void keyPressEvent( QKeyEvent * event );
     void configureSerialPort();
