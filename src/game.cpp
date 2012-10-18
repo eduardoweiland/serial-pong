@@ -9,6 +9,7 @@
 #include "game.h"
 #include "globals.h"
 #include "qextserialport.h"
+#include "player.h"
 //#include "scoreboard.h"
 
 /**
@@ -44,6 +45,16 @@ Game::Game( QWidget * parent ) :
     this->ball = new Ball();
     this->ball->setPos( this->scene()->width() / 2, this->scene()->height() / 2 );
     this->scene()->addItem( ball );
+
+    // cria os jogadores e posiciona
+    this->player1 = new Player(Player::LEFT);
+    this->player1->setPos( this->scene()->width()-980, (this->scene()->height()/2)-65  );
+    this->scene()->addItem( player1 );
+
+    this->player2 = new Player(Player::RIGHT);
+    this->player2->setPos( this->scene()->width()-55, (this->scene()->height()/2)-65  );
+    this->scene()->addItem( player2 );
+
 }
 
 /**

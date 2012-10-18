@@ -6,10 +6,17 @@
 class Player : public QGraphicsItem
 {
 public:
-    Player();
+    enum PlayerMode {
+        LEFT,
+        RIGHT
+    };
+
+    Player(PlayerMode mode);
 
     QRectF boundingRect() const;
     void paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget );
+
+    Player::PlayerMode getPlayerMode();
 
     void todown();
     void toup();
@@ -17,7 +24,7 @@ public:
 private:
     int  pwidth;
     int  pheight;
-
+    PlayerMode mode;
 };
 
 #endif // PLAYER_H
