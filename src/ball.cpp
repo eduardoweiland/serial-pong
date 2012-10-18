@@ -79,10 +79,10 @@ void Ball::advance( int phase )
     // verifica se a bola bateu em alguma parede
     //   !! essas verificações são feitas depois de mover
     //   !! e valem apenas para o próximo frame
-    if ( x() - radius <= rect.left()   ) hitLeftWall();
-    if ( y() - radius <= rect.top()    ) hitTopWall();
-    if ( x() + radius >= rect.right()  ) hitRightWall();
-    if ( y() + radius >= rect.bottom() ) hitBottomWall();
+    if ( x() - radius < rect.left()   ) hitLeftWall();
+    if ( y() - radius < rect.top()    ) hitTopWall();
+    if ( x() + radius > rect.right()  ) hitRightWall();
+    if ( y() + radius > rect.bottom() ) hitBottomWall();
 }
 
 /**
@@ -95,7 +95,7 @@ void Ball::advance( int phase )
  */
 void Ball::hitLeftWall()
 {
-    setX( scene()->sceneRect().left() + radius + 1 );
+    setX( scene()->sceneRect().left() + radius );
     angle = M_PI - angle;
 }
 
@@ -109,7 +109,7 @@ void Ball::hitLeftWall()
  */
 void Ball::hitRightWall()
 {
-    setX( scene()->sceneRect().right() - radius - 1 );
+    setX( scene()->sceneRect().right() - radius );
     angle = M_PI - angle;
 }
 
@@ -123,7 +123,7 @@ void Ball::hitRightWall()
  */
 void Ball::hitTopWall()
 {
-    setY( scene()->sceneRect().top() + radius + 1 );
+    setY( scene()->sceneRect().top() + radius );
     angle = 2 * M_PI - angle;
 }
 
@@ -137,7 +137,7 @@ void Ball::hitTopWall()
  */
 void Ball::hitBottomWall()
 {
-    setY( scene()->sceneRect().bottom() - radius - 1 );
+    setY( scene()->sceneRect().bottom() - radius );
     angle = 2 * M_PI - angle;
 }
 

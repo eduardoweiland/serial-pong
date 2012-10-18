@@ -4,22 +4,24 @@
 
 #include "player.h"
 
-Player::Player(QObject *parent) :
-    QGraphicsItem(parent)
+Player::Player() : QGraphicsItem()
 {
-    pwidth=35;
-    pheight=130;
-
+    this->pwidth  = 35;
+    this->pheight = 130;
 }
 
-
+QRectF Player::boundingRect() const
+{
+    return QRectF( 0, 0, pwidth, pheight );
+}
 
 void Player::paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget )
 {
     painter->setBrush( Qt::white );
-    painter->drawRect( pwidth, pheight );
+    painter->drawRect( 0, 0, pwidth, pheight );
 
 }
 
 
-
+void Player::todown(){}
+void Player::toup(){}

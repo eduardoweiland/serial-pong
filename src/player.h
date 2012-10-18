@@ -21,4 +21,3 @@ private:
 };
 
 #endif // PLAYER_H
- * @class Player player.h "player.h"

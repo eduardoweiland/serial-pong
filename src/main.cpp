@@ -43,7 +43,6 @@
 #include <QTime>
 
 #include "mainwindow.h"
-#include "gameoptions.h"
 
 /**
  * Função main.

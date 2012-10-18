@@ -45,7 +45,7 @@ GameOptions::GameOptions( QWidget * parent ) :
  */
 GameOptions::~GameOptions()
 {
-    delete ui;
+    delete this->ui;
 }
 
 /**
@@ -94,7 +94,8 @@ void GameOptions::btnMoveDownToggled( bool pressed )
 void GameOptions::keyPressEvent( QKeyEvent * event )
 {
     // não aceita teclas especiais (Ctrl, Shift, ...)
-    if ( Qt::NoModifier != event->modifiers() ) {
+    if ( Qt::NoModifier != event->modifiers() ||
+       ( this->grabbingKey != BTN_MOVEUP && this->grabbingKey != BTN_MOVEDOWN ) ) {
         event->ignore();
         return;
     }
