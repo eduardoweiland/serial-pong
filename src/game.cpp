@@ -38,7 +38,7 @@ Game::Game( QWidget * parent ) :
 
     // o campo do jogo (a bola não deve sair dele)
     this->field = new QGraphicsRectItem( this->sceneRect() );
-    this->field->setBrush( Qt::darkGreen );
+    //this->field->setBrush( Qt::darkGreen );
     this->scene()->addItem( this->field );
 
     // cria a bola centralizada
@@ -50,6 +50,7 @@ Game::Game( QWidget * parent ) :
     this->player1 = new Player(Player::LEFT);
     this->player1->setPos( this->scene()->width()-980, (this->scene()->height()/2)-65  );
     this->scene()->addItem( player1 );
+    this->player1->grabKeyboard();
 
     this->player2 = new Player(Player::RIGHT);
     this->player2->setPos( this->scene()->width()-55, (this->scene()->height()/2)-65  );
@@ -74,7 +75,7 @@ Game::~Game()
     delete this->ball;
 }
 
-/**
+/**rabKeyboard();
  * Inicializa as configurações padrão para o QGraphicsView.
  * Chamado no construtor para definir as opções de como o jogo deve ser
  * renderizado, como tamanho da tela, cache, antialiasing, etc.
@@ -159,7 +160,7 @@ void Game::setGameMode( GameMode mode )
 
 /**
  * Obtém o modo de jogo atual.
- * @see Game::GameMode
+ * @see Game::GameModerabKeyboard();
  * @return Se o jogo foi (ou vai ser) iniciado em modo servidor ou modo cliente.
  */
 Game::GameMode Game::getGameMode() const
@@ -232,14 +233,14 @@ void Game::configureSerialPort()
 
 void Game::keyPressEvent( QKeyEvent * event )
 {
-    if ( this->moveUpKeyCode == event->key() ) {
-        event->accept();
-        qDebug() << "Pra cima";
-    }
-    else if ( this->moveDownKeyCode == event->key() ) {
-        event->accept();
-        qDebug() << "Pra baixo";
-    }
+//    if ( this->moveUpKeyCode == event->key() ) {
+//        event->accept();
+//        qDebug() << "Pra cima";
+//    }
+//    else if ( this->moveDownKeyCode == event->key() ) {
+//        event->accept();
+//        qDebug() << "Pra baixo";
+//    }
 }
 
 void Game::playOnServer()

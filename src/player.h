@@ -3,6 +3,8 @@
 
 #include <QGraphicsItem>
 
+class QKeyEvent;
+
 class Player : public QGraphicsItem
 {
 public:
@@ -18,12 +20,15 @@ public:
 
     Player::PlayerMode getPlayerMode();
 
+    void keyPressEvent( QKeyEvent * event );
+
     void todown();
     void toup();
 
 private:
     int  pwidth;
     int  pheight;
+    float initpos;
     PlayerMode mode;
 };
 
