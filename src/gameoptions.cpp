@@ -1,5 +1,6 @@
 #include <QDialog>
 #include <QKeyEvent>
+#include <QDebug>
 
 #include "gameoptions.h"
 #include "ui_gameoptions.h"
@@ -19,6 +20,10 @@ GameOptions::GameOptions( QWidget * parent ) :
 {
     this->ui->setupUi( this );
 
+    this->moveUpKeyCode = this->reservedKey;
+    this->moveDownKeyCode = this->reservedKey;
+    this->grabbingKey = -1;
+
     // oculta o modo avançado
     this->ui->groupAdvanced->hide();
 
@@ -33,10 +38,11 @@ GameOptions::GameOptions( QWidget * parent ) :
     connect( this->ui->btnAdvanced, SIGNAL(toggled(bool)), this->ui->groupAdvanced, SLOT(setVisible(bool)) );
 
     // validações
-    connect( this->ui->rdbServerMode, SIGNAL(toggled(bool)), this, SLOT(validateConfig()) );
-    connect( this->ui->rdbClientMode, SIGNAL(toggled(bool)), this, SLOT(validateConfig()) );
-    connect( this->ui->btnMoveUp,     SIGNAL(toggled(bool)), this, SLOT(validateConfig()) );
-    connect( this->ui->btnMoveDown,   SIGNAL(toggled(bool)), this, SLOT(validateConfig()) );
+    connect( this->ui->rdbServerMode,  SIGNAL(toggled(bool)),        this, SLOT(validateConfig()) );
+    connect( this->ui->rdbClientMode,  SIGNAL(toggled(bool)),        this, SLOT(validateConfig()) );
+    connect( this->ui->btnMoveUp,      SIGNAL(toggled(bool)),        this, SLOT(validateConfig()) );
+    connect( this->ui->btnMoveDown,    SIGNAL(toggled(bool)),        this, SLOT(validateConfig()) );
+    connect( this->ui->editSerialPort, SIGNAL(textChanged(QString)), this, SLOT(validateConfig()) );
 }
 
 /**
@@ -57,12 +63,12 @@ GameOptions::~GameOptions()
 void GameOptions::btnMoveUpToggled( bool pressed )
 {
     if ( pressed ) {
-        ui->btnMoveDown->setChecked( false );
-        grabKeyboard();
-        grabbingKey = BTN_MOVEUP;
+        this->ui->btnMoveDown->setChecked( false );
+        this->grabKeyboard();
+        this->grabbingKey = BTN_MOVEUP;
     } else {
-        releaseKeyboard();
-        grabbingKey = -1;
+        this->releaseKeyboard();
+        this->grabbingKey = -1;
     }
 }
 
@@ -75,12 +81,12 @@ void GameOptions::btnMoveUpToggled( bool pressed )
 void GameOptions::btnMoveDownToggled( bool pressed )
 {
     if ( pressed ) {
-        ui->btnMoveUp->setChecked( false );
-        grabKeyboard();
-        grabbingKey = BTN_MOVEDOWN;
+        this->ui->btnMoveUp->setChecked( false );
+        this->grabKeyboard();
+        this->grabbingKey = BTN_MOVEDOWN;
     } else {
-        releaseKeyboard();
-        grabbingKey = -1;
+        this->releaseKeyboard();
+        this->grabbingKey = -1;
     }
 }
 
@@ -102,17 +108,20 @@ void GameOptions::keyPressEvent( QKeyEvent * event )
 
     event->accept();
 
-    if ( BTN_MOVEDOWN == grabbingKey ) {
-        ui->btnMoveDown->setChecked( false );
-        ui->btnMoveDown->setText( getKeyString( event->key() ) );
+    if ( BTN_MOVEDOWN == this->grabbingKey ) {
+        this->ui->btnMoveDown->setChecked( false );
+        this->ui->btnMoveDown->setText( this->getKeyString( event->key() ) );
+        this->moveDownKeyCode = (Qt::Key) event->key();
     }
-    else if ( BTN_MOVEUP == grabbingKey ) {
-        ui->btnMoveUp->setChecked( false );
-        ui->btnMoveUp->setText( getKeyString( event->key() ) );
+    else if ( BTN_MOVEUP == this->grabbingKey ) {
+        this->ui->btnMoveUp->setChecked( false );
+        this->ui->btnMoveUp->setText( this->getKeyString( event->key() ) );
+        this->moveUpKeyCode = (Qt::Key) event->key();
     }
 
-    releaseKeyboard();
-    grabbingKey = -1;
+    this->grabbingKey = -1;
+    this->releaseKeyboard();
+    this->validateConfig();
 }
 
 /**
@@ -171,12 +180,16 @@ QString GameOptions::getKeyString( int code )
  *
  * O método é um slot para permitir conectá-lo diretamente aos signals enviados
  * pelos itens da interface.
- *
- * @notes
  */
 void GameOptions::validateConfig()
 {
     bool valid = true;
+    valid = valid && this->getGameMode() != Game::UNKNOWN;
+    valid = valid && !this->getSerialPort().isEmpty();
+    valid = valid && this->getMoveUpKey() != this->reservedKey;
+    valid = valid && this->getMoveDownKey() != this->reservedKey;
+    valid = valid && this->getMoveUpKey() != this->getMoveDownKey();
+
     this->ui->btnPlay->setDisabled(!valid);
 }
 
