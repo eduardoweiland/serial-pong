@@ -316,16 +316,15 @@ void Game::playOnClient()
     QByteArray read = this->port->read( sizeof(GameControl) );
     GameControl * info = (GameControl*) read.data();
 
-    QByteArray data;
-    ClientInfo * client;
-    client->playerMovement = 0;   // movimento do jogador
-    data.setRawData( (char*) &client, sizeof(ClientInfo) );
-    this->port->write( data );
+//    QByteArray data;
+//    ClientInfo * client;
+//    client->playerMovement = 0;   // movimento do jogador
+//    data.setRawData( (char*) &client, sizeof(ClientInfo) );
+//    this->port->write( data );
 
     this->ball->setX( info->ballX );
     this->ball->setY( info->ballY );
-
-    delete info;
+    this->scoreBoard->setTime( info->gameSeconds );
 }
 
 /**
