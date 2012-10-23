@@ -13,7 +13,7 @@
 class Ball : public QGraphicsItem
 {
 public:
-    Ball();
+    Ball( QRectF field );
 
     QRectF boundingRect() const;
     void paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget );
@@ -25,9 +25,10 @@ protected:
     void advance( int phase );
 
 private:
-    qreal angle;
-    int   speed;
-    int   radius;
+    qreal  angle;
+    int    speed;
+    int    radius;
+    QRectF field;
 
     void hitLeftWall();
     void hitRightWall();

@@ -22,7 +22,7 @@
  * utilizar o Qt Creator.
  *
  * Se não quiser (ou não puder) utilizar o Qt Creator, os seguintes comandos
- * devem funcionar (considerando um ambiente Unix):
+ * devem funcionar (considerando um ambiente Linux/Unix):
  *
  *      $ cd /path/to/serial-pong
  *      $ qmake serial-pong.pro   ## dependendo do ambiente o comando pode ser qmake-qt4
@@ -36,11 +36,13 @@
  *
  * Para poder executar o aplicativo são necessárias as bibliotecas dinâmicas do
  * Qt. São necessárias apenas QtCore e QtGui. Se o QtCreator está instalado,
- * então essas bibliotecas também devem estar.
+ * então essas bibliotecas também devem estar. Para sistemas Windows, as
+ * bibliotecas necessárias já estão incluídas.
  */
 
 #include <QtGui/QApplication>
 #include <QTime>
+#include <QFontDatabase>
 
 #include "mainwindow.h"
 
@@ -62,8 +64,11 @@ int main( int argc, char ** argv )
 
     QApplication app( argc, argv );
     app.setApplicationName( "Serial Pong" );
-    app.setApplicationVersion( "0.0.1 pre-alpha" );
+    app.setApplicationVersion( "0.1 alpha" );
     app.setOrganizationName( "Eduardo & Wellington softwares" ); // :D
+
+    // carrega a fonte utilizada no placar
+    QFontDatabase::addApplicationFont( ":/fonts/erbos_draco_nbp.ttf" );
 
     // exibe a janela principal maximizada
     MainWindow win;

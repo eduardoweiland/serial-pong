@@ -5,7 +5,6 @@
 
 class Game;
 class GameOptions;
-class ScoreBoard;
 
 namespace Ui
 {
@@ -38,7 +37,6 @@ private:
     Ui::MainWindow * ui;
     Game * game;
     GameOptions * op;
-    ScoreBoard * scoreBoard;
 };
 
 #endif // MAINWINDOW_H

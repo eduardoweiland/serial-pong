@@ -1,7 +1,7 @@
 #ifndef SCOREBOARD_H
 #define SCOREBOARD_H
 
-#include <QWidget>
+#include <QGraphicsItem>
 
 class QTime;
 
@@ -12,17 +12,20 @@ class QTime;
  * O placar exibe informações sobre o número de gols de cada jogador e o tempo
  * de jogo.
  */
-class ScoreBoard : public QWidget
+class ScoreBoard : public QGraphicsItem
 {
-    Q_OBJECT
-
 public:
-    explicit ScoreBoard( QWidget * parent = 0 );
-    ~ScoreBoard();
+    ScoreBoard();
+
+    QRectF boundingRect() const;
+    void paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget );
 
     void setTime( int seconds );
 
 private:
+    int leftScore;
+    int rightScore;
+    QTime elapsed;
 };
 
 #endif // SCOREBOARD_H
