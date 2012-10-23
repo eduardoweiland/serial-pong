@@ -7,24 +7,31 @@
 #include "ball.h"
 
 /**
- * Construtor padrão.
- * Inicializa as propriedades da classe com valores pré-definidos.
- * A bola padrão possui raio de 15 pixels e velocidade 6. O ângulo inicial é
- * randômico, e a bola sempre começa saindo apenas para a direita ou para a
- * esquerda.
+ * Cria uma nova bola.
+ *
+ * As propriedades são inicializadas com valores pré-definidos.  A bola padrão
+ * possui raio de 15 pixels e velocidade 6. O ângulo inicial é randômico, e a
+ * bola sempre começa saindo apenas para a direita ou para a esquerda.
+ *
+ * A bola será mantida dentro do campo @a field passado como parâmetro,
+ * rebatendo nas suas paredes conforme as leis da reflexão.
+ *
+ * @param field O campo em que a bola deve ser jogada.
  *
  * @note Para testes é mantido um ângulo de saída completamente aleatório.
  */
-Ball::Ball() : QGraphicsItem()
+Ball::Ball( QRectF field ) : QGraphicsItem()
 {
-    radius = 15;
-    angle  = ((qrand() % 200) / 100.0) * M_PI;   // saída aleatória apenas para testes
+    this->radius = 15;
+    this->angle  = ((qrand() % 200) / 100.0) * M_PI;   // saída aleatória apenas para testes
     //angle  = (qrand() % 2) ? 0 : M_PI;   // saída para direita ou esquerda
-    speed  = 6;
+    this->speed  = 6;
+    this->field = field;
 }
 
 /**
  * Retorna a área ocupada por esse objeto.
+ *
  * Necessário para que o Qt possa mover corretamente o item, pois essa é a área
  * que será atualizada (redesenhada) na tela.
  *
@@ -33,12 +40,14 @@ Ball::Ball() : QGraphicsItem()
  */
 QRectF Ball::boundingRect() const
 {
-    return QRectF( -radius, -radius, radius * 2, radius * 2 );
+    return QRectF( -this->radius, -this->radius, this->radius * 2, this->radius * 2 );
 }
 
 /**
  * Método utilizado para desenhar o item na tela.
- * O Qt realiza o trabalho de chamar esse método ao adicioná-lo à cena.
+ *
+ * O Qt realiza o trabalho de chamar esse método ao adicioná-lo à cena e ao
+ * atualizá-lo através do método QGraphicsItem::update.
  *
  * @param painter Ponteiro para o QPainter usado para desenhar o item.
  * @param style   Não utilizado.
@@ -47,9 +56,7 @@ QRectF Ball::boundingRect() const
  */
 void Ball::paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget )
 {
-//    painter->setBrush( Qt::white );
-//    painter->drawEllipse( -radius, -radius, radius * 2, radius * 2 );
-    painter->drawPixmap( -radius, -radius, radius * 2, radius * 2, QPixmap( ":/ball.png" ) );
+    painter->drawPixmap( this->boundingRect().toRect(), QPixmap( ":/ball.png" ) );
 }
 
 /**
@@ -71,20 +78,18 @@ void Ball::advance( int phase )
     // garante um ângulo sempre entre 0 e 360 graus
     normalizeAngle();
 
-    QRectF rect = scene()->sceneRect();
-
     // move a bola considerando o ângulo e a velocidade atuais
     moveBy( cos( angle ) * speed, -sin( angle ) * speed );
 
-    this->setRotation(this->rotation()+(speed*2*cos(angle)));
+    this->setRotation( this->rotation() + ( speed * 2 * cos( angle ) ) );
 
     // verifica se a bola bateu em alguma parede
     //   !! essas verificações são feitas depois de mover
     //   !! e valem apenas para o próximo frame
-    if ( x() - radius < rect.left()   ) hitLeftWall();
-    if ( y() - radius < rect.top()    ) hitTopWall();
-    if ( x() + radius > rect.right()  ) hitRightWall();
-    if ( y() + radius > rect.bottom() ) hitBottomWall();
+    if ( x() - radius < this->field.left()   ) hitLeftWall();
+    if ( y() - radius < this->field.top()    ) hitTopWall();
+    if ( x() + radius > this->field.right()  ) hitRightWall();
+    if ( y() + radius > this->field.bottom() ) hitBottomWall();
 }
 
 /**
@@ -97,7 +102,7 @@ void Ball::advance( int phase )
  */
 void Ball::hitLeftWall()
 {
-    setX( scene()->sceneRect().left() + radius );
+    setX( this->field.left() + radius );
     angle = M_PI - angle;
 }
 
@@ -111,7 +116,7 @@ void Ball::hitLeftWall()
  */
 void Ball::hitRightWall()
 {
-    setX( scene()->sceneRect().right() - radius );
+    setX( this->field.right() - radius );
     angle = M_PI - angle;
 }
 
@@ -125,7 +130,7 @@ void Ball::hitRightWall()
  */
 void Ball::hitTopWall()
 {
-    setY( scene()->sceneRect().top() + radius );
+    setY( this->field.top() + radius );
     angle = 2 * M_PI - angle;
 }
 
@@ -139,7 +144,7 @@ void Ball::hitTopWall()
  */
 void Ball::hitBottomWall()
 {
-    setY( scene()->sceneRect().bottom() - radius );
+    setY( this->field.bottom() - radius );
     angle = 2 * M_PI - angle;
 }
 
@@ -158,14 +163,14 @@ void Ball::normalizeAngle()
 
 /**
  * Método utilizado para acelerar a bola.
- * O limite máximo estabelecido para a velocidade da bola é de 20 pixels/frame.
+ * O limite máximo estabelecido para a velocidade da bola é de 25 pixels/frame.
  *
  * @note A velocidade real da bola também depende do número de frames por
  *       segundo (FPS) do jogo.
  */
 void Ball::accelerate()
 {
-    if ( speed <= 19 ) {
+    if ( speed <= 24 ) {
         speed++;
     }
 }

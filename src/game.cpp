@@ -1,4 +1,6 @@
+#include <QApplication>
 #include <QGraphicsView>
+#include <QGraphicsTextItem>
 #include <QKeyEvent>
 #include <QTime>
 #include <QTimer>
@@ -10,52 +12,62 @@
 #include "globals.h"
 #include "qextserialport.h"
 #include "player.h"
-//#include "scoreboard.h"
+#include "scoreboard.h"
 
 /**
- * Construtor padrão.
- * Cria um novo jogo, abrindo primeiro a tela de configuração.
+ * Cria um novo jogo.
  *
- * A classe herda de QGraphicsView e representa toda a área do jogo.
+ * A classe herda de QGraphicsView e representa toda a área do jogo, incluindo
+ * o campo, os jogadores, a bola e inclusive o placar.
+ *
+ * O tamanho do jogo é predefinido em 1000px de largura e 600px de altura.
+ *
+ * @param parent Ponteiro para o widget pai do jogo.
  *
  * @see http://qt-project.org/doc/qt-4.8/qgraphicsview.html#QGraphicsView
  */
 Game::Game( QWidget * parent ) :
-    QGraphicsView( new QGraphicsScene( 0, 0, 1000, 500 ), parent )
+    QGraphicsView( new QGraphicsScene( 0, 0, 1000, 600 ), parent )
 {
     this->port            = NULL;
-    this->portName        = SERIALPORT;
+    this->portName        = SERIALPORT; // porta padrão COM1
     this->timer           = NULL;
     this->gameTime        = NULL;
     this->gameMode        = UNKNOWN;
-    this->moveUpKeyCode   = Qt::Key_Down;
-    this->moveDownKeyCode = Qt::Key_Up;
+    this->moveUpKeyCode   = Qt::Key_Up;
+    this->moveDownKeyCode = Qt::Key_Down;
+    this->displayedText   = NULL;
 
     this->initializeConfig();
 
     // cria a cena para conter todos os itens do jogo.
     this->scene()->setBackgroundBrush( Qt::black );
 
+    QRectF fieldRect = QRectF( 0, 0, 1000, 500 );
+
     // o campo do jogo (a bola não deve sair dele)
-    this->field = new QGraphicsRectItem( this->sceneRect() );
+    this->field = new QGraphicsRectItem( fieldRect );
     //this->field->setBrush( Qt::darkGreen );
     this->scene()->addItem( this->field );
 
     // cria a bola centralizada
-    this->ball = new Ball();
-    this->ball->setPos( this->scene()->width() / 2, this->scene()->height() / 2 );
+    this->ball = new Ball( fieldRect );
+    this->ball->setPos( fieldRect.width() / 2, fieldRect.height() / 2 );
     this->scene()->addItem( ball );
 
     // cria os jogadores e posiciona
-    this->player1 = new Player(Player::LEFT);
-    this->player1->setPos( this->scene()->width()-980, (this->scene()->height()/2)-65  );
+    this->player1 = new Player( Player::LEFT );
+    this->player1->setPos( fieldRect.width() - 980, ( fieldRect.height() / 2 ) - 65 );
     this->scene()->addItem( player1 );
     this->player1->grabKeyboard();
 
-    this->player2 = new Player(Player::RIGHT);
-    this->player2->setPos( this->scene()->width()-55, (this->scene()->height()/2)-65  );
+    this->player2 = new Player( Player::RIGHT );
+    this->player2->setPos( fieldRect.width() - 55, ( fieldRect.height() / 2 ) - 65 );
     this->scene()->addItem( player2 );
 
+    this->scoreBoard = new ScoreBoard();
+    this->scoreBoard->setPos( 0, 500 );
+    this->scene()->addItem( this->scoreBoard );
 }
 
 /**
@@ -73,10 +85,13 @@ Game::~Game()
     delete this->gameTime;
     delete this->field;
     delete this->ball;
+    delete this->scoreBoard;
+    delete this->displayedText;
 }
 
-/**rabKeyboard();
+/**
  * Inicializa as configurações padrão para o QGraphicsView.
+ *
  * Chamado no construtor para definir as opções de como o jogo deve ser
  * renderizado, como tamanho da tela, cache, antialiasing, etc.
  */
@@ -98,6 +113,7 @@ void Game::initializeConfig()
 
 /**
  * Método que permite iniciar um novo jogo.
+ *
  * Configura a porta serial e inicializa o contador de frames, utilizado para
  * atualizar a tela do jogo.
  *
@@ -119,7 +135,7 @@ void Game::play()
         connect( this->timer, SIGNAL(timeout()), this, SLOT(playOnClient()) );
     }
     else {
-        exit( ERR_BAD_GAME_MODE );
+        qApp->exit( ERR_BAD_GAME_MODE );
     }
 
     this->timer->start( 1000 / 20 );  // 20 FPS
@@ -160,7 +176,7 @@ void Game::setGameMode( GameMode mode )
 
 /**
  * Obtém o modo de jogo atual.
- * @see Game::GameModerabKeyboard();
+ * @see Game::GameMode
  * @return Se o jogo foi (ou vai ser) iniciado em modo servidor ou modo cliente.
  */
 Game::GameMode Game::getGameMode() const
@@ -190,7 +206,6 @@ QString Game::getPortName() const
  *
  * @return O método retorna false se nenhum jogo foi iniciado ou se o jogo já
  *         foi finalizado.
- *
  */
 bool Game::isPlaying() const
 {
@@ -227,8 +242,6 @@ void Game::configureSerialPort()
     this->port->setFlowControl( FLOW_OFF );
     this->port->setTimeout( 200 );
     this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered );
-
-    qDebug() << this->portName;
 }
 
 void Game::keyPressEvent( QKeyEvent * event )
@@ -243,6 +256,17 @@ void Game::keyPressEvent( QKeyEvent * event )
 //    }
 }
 
+/**
+ * Slot privado que controla o jogo no lado do servidor.
+ *
+ * Esse é o método responsável por calcular todos os movimentos do jogo e
+ * depois enviar essas informações para o cliente através da comunicação serial.
+ *
+ * @todo Receber dados do cliente e calcular movimentos do jogador.
+ *
+ * @see Game::play
+ * @see Game::configureSerialPort
+ */
 void Game::playOnServer()
 {
     // jogo só pode ser jogado com a conexão estabelecida
@@ -262,12 +286,26 @@ void Game::playOnServer()
     info.playerRight = 0;    // TODO
     info.scoreLeft   = 0;    // TODO
     info.scoreRight  = 0;    // TODO
-    info.gameSeconds = this->gameTime->elapsed() / 1000;    // TODO
+    info.gameSeconds = this->gameTime->elapsed() / 1000;
 
     data.setRawData( (char*) &info, sizeof(GameControl) );
     this->port->write(data);
+
+    // atualiza o placar atual
+    this->scoreBoard->setTime( info.gameSeconds );
 }
 
+/**
+ * Slot privado que controla o jogo no lado do cliente.
+ *
+ * Esse é o método responsável por receber as informações do servidor através
+ * da comunicação serial e aplicá-las ao jogo.
+ *
+ * @todo Enviar dados para o servidor.
+ *
+ * @see Game::play
+ * @see Game::configureSerialPort
+ */
 void Game::playOnClient()
 {
     // jogo só pode ser jogado com a conexão estabelecida
@@ -278,6 +316,57 @@ void Game::playOnClient()
     QByteArray read = this->port->read( sizeof(GameControl) );
     GameControl * info = (GameControl*) read.data();
 
+    QByteArray data;
+    ClientInfo * client;
+    client->playerMovement = 0;   // movimento do jogador
+    data.setRawData( (char*) &client, sizeof(ClientInfo) );
+    this->port->write( data );
+
     this->ball->setX( info->ballX );
     this->ball->setY( info->ballY );
+
+    delete info;
+}
+
+/**
+ * Método utilizado para exibir uma mensagem sobre o jogo.
+ *
+ * A mensagem será exibida no centro da tela, sobre os outros objetos do jogo.
+ * Apenas uma mensagem pode ser exibida por vez. Se já houver uma em exibição,
+ * a mensagem não será exibida.
+ *
+ * @param msg A mensagem a ser exibida. Pode conter HTML.
+ * @param time O tempo (em milissegundos) para a mensagem ser exibida. O padrão
+ *        é 5000 (5 segundos).
+ * @return Retorna true se a mensagem pode ser exibida. Senão, retorna false.
+ */
+bool Game::showMessage( QString msg, int time )
+{
+    if ( this->displayedText != NULL ) {
+        return false;
+    }
+
+    this->displayedText = new QGraphicsTextItem();
+    this->displayedText->setTextWidth( this->scene()->width() );
+    this->displayedText->setDefaultTextColor( Qt::yellow );
+    this->displayedText->setFont( QFont( "sans-serif", 80, QFont::Bold ) );
+    this->displayedText->setHtml( "<center style=\"line-height: 350px\">" + msg + "</center>" );
+    this->scene()->addItem( this->displayedText );
+
+    QTimer::singleShot( time, this, SLOT(removeMessage()) );
+
+    return true;
+}
+
+/**
+ * Slot utilizado para remover a mensagem adicionada com Game::showMessage.
+ *
+ * O método é passado como parâmetro para QTimer::singleShot e serve para
+ * remover a mensagem exibida após o tempo configurado.
+ */
+void Game::removeMessage()
+{
+    if ( this->displayedText != NULL ) {
+        this->scene()->removeItem( this->displayedText );
+    }
 }

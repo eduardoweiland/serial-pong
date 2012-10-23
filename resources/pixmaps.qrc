@@ -3,6 +3,7 @@
         <file>ball.png</file>
         <file>left-player.png</file>
         <file>right-player.png</file>
+        <file>scoreboard.png</file>
         <file>background.png</file>
     </qresource>
 </RCC>
