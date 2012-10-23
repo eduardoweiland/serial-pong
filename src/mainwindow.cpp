@@ -6,7 +6,6 @@
 #include "ui_mainwindow.h"      // gerado pelo Qt a partir de mainwindow.ui
 #include "game.h"
 #include "gameoptions.h"
-#include "scoreboard.h"
 
 /**
  * Construtor.
@@ -23,9 +22,6 @@ MainWindow::MainWindow( QWidget * parent ) :
 
     this->game = NULL;
     this->op   = NULL;
-
-    this->scoreBoard = new ScoreBoard( this );
-    this->ui->centralLayout->addWidget( this->scoreBoard );
 
     // conecta sinais e slots (eventos)
     connect( this->ui->actionNewGame, SIGNAL(triggered()), this, SLOT(startNewGame()) );

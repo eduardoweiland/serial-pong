@@ -52,6 +52,10 @@ private:
     Qt::Key moveUpKeyCode;
     Qt::Key moveDownKeyCode;
 
+    // uma tecla para representar "nenhuma tecla"
+    // qualquer valor diferente é permitido para jogar.
+    static const Qt::Key reservedKey = Qt::Key_nobreakspace;
+
     // usado apenas para controlar a tecla que for pressionada
     short int grabbingKey;
     const static short int BTN_MOVEUP   = 0;

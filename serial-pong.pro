@@ -32,4 +32,5 @@ FORMS += src/mainwindow.ui \
          src/gameoptions.ui
 
 RESOURCES += resources/icons.qrc \
-    resources/pixmaps.qrc
+    resources/pixmaps.qrc \
+    resources/fonts.qrc
