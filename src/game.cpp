@@ -241,7 +241,7 @@ void Game::configureSerialPort()
     this->port->setStopBits( STOP_1 );
     this->port->setFlowControl( FLOW_OFF );
     this->port->setTimeout( 200 );
-    this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered );
+    this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered | QIODevice::Truncate );
 }
 
 void Game::keyPressEvent( QKeyEvent * event )
@@ -273,6 +273,9 @@ void Game::playOnServer()
     if ( this->port == NULL || !this->port->isOpen() ) {
         return;
     }
+
+    if ( this->port->bytesAvailable() > 0 )
+        QByteArray read = this->port->read( sizeof(ClientInfo) );
 
     // realiza os cálculos no servidor
     this->scene()->advance();
@@ -313,14 +316,14 @@ void Game::playOnClient()
         return;
     }
 
+    QByteArray data;
+    ClientInfo client;
+    client.playerMovement = 0;   // movimento do jogador
+    data.setRawData( (char*) &client, sizeof(ClientInfo) );
+    this->port->write( data );
+
     QByteArray read = this->port->read( sizeof(GameControl) );
     GameControl * info = (GameControl*) read.data();
-
-//    QByteArray data;
-//    ClientInfo * client;
-//    client->playerMovement = 0;   // movimento do jogador
-//    data.setRawData( (char*) &client, sizeof(ClientInfo) );
-//    this->port->write( data );
 
     this->ball->setX( info->ballX );
     this->ball->setY( info->ballY );
