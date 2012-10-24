@@ -102,8 +102,8 @@ void MainWindow::startNewGame()
     // carrega as configurações
     this->game->setPortName( this->op->getSerialPort() );
     this->game->setGameMode( this->op->getGameMode() );
-    //TODO: this->op->getMoveUpKey();
-    //TODO: this->op->getMoveDownKey();
+    this->game->setMoveUpKeyCode( this->op->getMoveUpKey() );
+    this->game->setMoveDownKeyCode( this->op->getMoveDownKey() );
     delete this->op;
     this->op = NULL;
 

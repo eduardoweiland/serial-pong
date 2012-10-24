@@ -46,8 +46,8 @@ Game::Game( QWidget * parent ) :
     QRectF fieldRect = QRectF( 0, 0, 1000, 500 );
 
     // o campo do jogo (a bola não deve sair dele)
-    this->field = new QGraphicsRectItem( fieldRect );
-    //this->field->setBrush( Qt::darkGreen );
+    this->field = new QGraphicsRectItem( this->sceneRect() );
+    this->field->setBrush( QPixmap ( ":/background.png" ) );
     this->scene()->addItem( this->field );
 
     // cria a bola centralizada
@@ -57,12 +57,12 @@ Game::Game( QWidget * parent ) :
 
     // cria os jogadores e posiciona
     this->player1 = new Player( Player::LEFT );
-    this->player1->setPos( fieldRect.width() - 980, ( fieldRect.height() / 2 ) - 65 );
+    this->player1->setPos( fieldRect.width() - 900, ( fieldRect.height() / 2 ) - 65 );
     this->scene()->addItem( player1 );
     this->player1->grabKeyboard();
 
     this->player2 = new Player( Player::RIGHT );
-    this->player2->setPos( fieldRect.width() - 55, ( fieldRect.height() / 2 ) - 65 );
+    this->player2->setPos( fieldRect.width() - 135, ( fieldRect.height() / 2 ) - 65 );
     this->scene()->addItem( player2 );
 
     this->scoreBoard = new ScoreBoard();
@@ -147,6 +147,14 @@ void Game::play()
     // Locutor: bola rolando, começa o jogo do Servidor X Cliente aqui no estádio do Qt ;-)
 }
 
+void Game::setMoveUpKeyCode( Qt::Key key ){
+    this->moveUpKeyCode=key;
+}
+
+void Game::setMoveDownKeyCode( Qt::Key key ){
+    this->moveDownKeyCode=key;
+}
+
 /**
  * Slot utilizado para aumentar a velocidade da bola.
  * Recebe os eventos tanto do botão quanto da tecla de atalho.
@@ -201,6 +209,14 @@ QString Game::getPortName() const
     return this->portName;
 }
 
+Qt::Key  Game::getMoveUpKeyCode (){
+    return this->moveUpKeyCode;
+}
+
+Qt::Key  Game::getMoveDownKeyCode (){
+    return this->moveDownKeyCode;
+}
+
 /**
  * Verifica se o jogo está ativo ou não.
  *
@@ -246,14 +262,24 @@ void Game::configureSerialPort()
 
 void Game::keyPressEvent( QKeyEvent * event )
 {
-//    if ( this->moveUpKeyCode == event->key() ) {
-//        event->accept();
-//        qDebug() << "Pra cima";
-//    }
-//    else if ( this->moveDownKeyCode == event->key() ) {
-//        event->accept();
-//        qDebug() << "Pra baixo";
-//    }
+    if ( this->moveUpKeyCode == event->key() ) {
+        event->accept();
+        if (gameMode == SERVER){
+            player1->toup();
+        }
+        else {
+            player2->toup();
+        }
+    }
+    else if ( this->moveDownKeyCode == event->key() ) {
+        event->accept();
+        if (gameMode == SERVER){
+            player1->todown();
+        }
+        else {
+            player2->todown();
+        }
+    }
 }
 
 /**

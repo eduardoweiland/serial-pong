@@ -20,8 +20,6 @@ public:
 
     Player::PlayerMode getPlayerMode();
 
-    void keyPressEvent( QKeyEvent * event );
-
     void todown();
     void toup();
 
