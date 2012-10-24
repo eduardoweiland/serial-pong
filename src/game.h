@@ -59,10 +59,14 @@ public:
     // setters
     void setPortName( QString port );
     void setGameMode( GameMode mode );
+    void setMoveUpKeyCode ( Qt::Key key );
+    void setMoveDownKeyCode ( Qt::Key key );
 
     // getters
     QString  getPortName() const;
     GameMode getGameMode() const;
+    Qt::Key  getMoveUpKeyCode ();
+    Qt::Key  getMoveDownKeyCode ();
 
     bool isPlaying() const;
     bool showMessage( QString msg, int time = 5000 );
