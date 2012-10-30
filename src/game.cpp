@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QMessageBox>
+#include <cmath>
 
 #include "ball.h"
 #include "game.h"
@@ -137,7 +138,6 @@ void Game::play()
     else {
         qApp->exit( ERR_BAD_GAME_MODE );
     }
-
     this->timer->start( 1000 / 20 );  // 20 FPS
     this->gameTime->start();
 
@@ -145,6 +145,16 @@ void Game::play()
     this->grabKeyboard();
 
     // Locutor: bola rolando, começa o jogo do Servidor X Cliente aqui no estádio do Qt ;-)
+}
+
+void Game::playerCollision(){
+    // COLISAO DA FRENTE = ainda BUGADA traseira, cima e baixo...
+    if ((this->ball->x() <= this->player1->x()+50) && //Se bate na linha do jogador
+        (this->ball->y()+15 > this->player1->y()) &&  //Se esta abaixo do inicio do jogador
+        (this->ball->y() < this->player1->y()+135)   //Se esta acima do final do jogador
+         ){
+        this->ball->setAngle(-1);
+    }
 }
 
 void Game::setMoveUpKeyCode( Qt::Key key ){
@@ -305,6 +315,7 @@ void Game::playOnServer()
 
     // realiza os cálculos no servidor
     this->scene()->advance();
+    this->playerCollision();
 
     // envia os novos dados para o cliente
     QByteArray data;
