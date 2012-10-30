@@ -20,6 +20,10 @@ public:
 
     void accelerate();
     void deaccelerate();
+    //teste
+    void setAngle(int i);
+    int getAngle ();
+    //teste
 
 protected:
     void advance( int phase );
@@ -35,6 +39,7 @@ private:
     void hitTopWall();
     void hitBottomWall();
     void normalizeAngle();
+
 };
 
 #endif // BALL_H

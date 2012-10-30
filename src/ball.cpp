@@ -4,6 +4,7 @@
 
 #include <cmath>
 
+#include "player.h"
 #include "ball.h"
 
 /**
@@ -54,9 +55,19 @@ QRectF Ball::boundingRect() const
  * @param widget  Não utilizado.
  * @see http://qt-project.org/doc/qt-4.8/qgraphicsitem.html#paint
  */
+
+
 void Ball::paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget )
 {
     painter->drawPixmap( this->boundingRect().toRect(), QPixmap( ":/ball.png" ) );
+}
+/**************************************************/
+void Ball::setAngle(int i){
+    this->angle=M_PI-angle;
+}
+
+int Ball::getAngle (){
+    return this->angle;
 }
 
 /**

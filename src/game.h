@@ -104,6 +104,7 @@ private:
     void keyPressEvent( QKeyEvent * event );
     void configureSerialPort();
     void initializeConfig();
+    void playerCollision();
 };
 
 #endif // GAME_H
