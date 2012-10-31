@@ -1,5 +1,6 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
+#include <QDebug>
 #include <QPainter>
 
 #include <cmath>
@@ -64,10 +65,33 @@ void Ball::paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QW
 }
 /**************************************************/
 void Ball::setAngle(int i){
-    this->angle=M_PI-angle;
+    qDebug() << "bola: " << i;
+//    int x = 0;
+//    if ( i < 0){
+//        x=-1;
+//    }
+
+//    if ( i > 0){
+//        x=1;
+//    }
+
+//    this->angle=M_PI-(angle*(i%67)*x*M_PI);
+//    angle=M_PI/3;
+//    angle*= i/68;
+//    angle+= M_PI_4;
+//    if (i < 0){
+        angle=(M_PI/180)*(i)*(-0.7);
+//    }
+//    if (i > 0){
+//        angle=(M_PI/180)*(i)*(0.7);
+
+//    }
+//    if (i == 0){
+//        angle=0;
+//    }
 }
 
-int Ball::getAngle (){
+float Ball::getAngle (){
     return this->angle;
 }
 
@@ -170,7 +194,7 @@ void Ball::hitBottomWall()
  */
 void Ball::normalizeAngle()
 {
-    if ( angle < 0 || angle > 2 * M_PI ) {
+    while ( angle < 0 || angle > 2 * M_PI ) {
         angle = qAbs( 2 * M_PI - qAbs( angle ) );
     }
 }

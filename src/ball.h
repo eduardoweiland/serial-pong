@@ -26,7 +26,7 @@ public:
 
     //teste
     void setAngle(int i);
-    int getAngle ();
+    float getAngle ();
     //teste
 
 protected:
