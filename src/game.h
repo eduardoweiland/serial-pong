@@ -9,6 +9,7 @@ class QString;
 class QTimer;
 class Player;
 class ScoreBoard;
+class QGraphicsDropShadowEffect;
 
 /**
  * Define a estrutura utilizada na comunicação serial.
@@ -25,7 +26,8 @@ typedef struct {
     unsigned playerRight : 9;  /**< Posição Y do jogador da direita (de 0 até 370 = 9 bits) */
     unsigned scoreLeft   : 7;  /**< Placar do jogador da esquerda (de 0 até 127 = 7 bits) */
     unsigned scoreRight  : 7;  /**< Placar do jogador da direita (de 0 até 127 = 7 bits) */
-    unsigned gameSeconds : 13; /**< Tempo de jogo em segundos (13 bits = 2h16min31s de jogo) */
+    unsigned gameSeconds : 12; /**< Tempo de jogo em segundos (12 bits = 1h8min15s de jogo) */
+    unsigned ballReverse : 1;  /**< Flag que indica se a bola deve girar no sentido contrário ou normal */
 } GameControl;
 
 typedef struct {
@@ -73,6 +75,7 @@ public:
 
 public slots:
     void play();
+    void readyToPlay();
     void accelerate();
     void deaccelerate();
 
@@ -89,21 +92,31 @@ private:
     Qt::Key  moveDownKeyCode;
 
     // controle do jogo
-    QextSerialPort    * port;
-    QTimer            * timer;
-    QTime             * gameTime;
-    ScoreBoard        * scoreBoard;
-    QGraphicsTextItem * displayedText;
+    QextSerialPort * port;
+    QTimer         * timer;
+    QTime          * gameTime;
+    ScoreBoard     * scoreBoard;
+
+    QGraphicsTextItem         * displayedText;
+    QGraphicsDropShadowEffect * displayedTextEffect;
+
+    bool otherReady;
 
     // items do jogo
     QGraphicsRectItem * field;
+    QGraphicsRectItem * goalLeft;
+    QGraphicsRectItem * goalRight;
     Ball              * ball;
     Player            * player1;
     Player            * player2;
 
     void keyPressEvent( QKeyEvent * event );
+    void resizeEvent( QResizeEvent * event );
+    bool eventFilter( QObject * obj, QEvent * event );
+
     void configureSerialPort();
     void initializeConfig();
+    void verifyGoal();
     void playerCollision();
 };
 

@@ -10,13 +10,13 @@
     <x>0</x>
     <y>0</y>
     <width>429</width>
-    <height>311</height>
+    <height>384</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Opções</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,2,1,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1,2,1,1">
    <item>
     <widget class="QGroupBox" name="groupModeSelect">
      <property name="title">
@@ -34,6 +34,29 @@
        <widget class="QRadioButton" name="rdbClientMode">
         <property name="text">
          <string>Cliente</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Jogador</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Nome</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit">
+        <property name="maxLength">
+         <number>10</number>
         </property>
        </widget>
       </item>

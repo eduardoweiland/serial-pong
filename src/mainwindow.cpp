@@ -96,14 +96,15 @@ void MainWindow::startNewGame()
     op->close();
 
     this->game = new Game( this );
-    this->ui->centralLayout->addWidget( this->game, 1 );
-//    this->setCentralWidget( this->game );
+    this->setCentralWidget( this->game );
 
     // carrega as configurações
     this->game->setPortName( this->op->getSerialPort() );
     this->game->setGameMode( this->op->getGameMode() );
     this->game->setMoveUpKeyCode( this->op->getMoveUpKey() );
     this->game->setMoveDownKeyCode( this->op->getMoveDownKey() );
+
+    // não precisamos mais da tela de opções
     delete this->op;
     this->op = NULL;
 
@@ -111,5 +112,6 @@ void MainWindow::startNewGame()
     connect( this->ui->actionSpeedMinus, SIGNAL(triggered()), this->game, SLOT(deaccelerate()) );
 
     // Vamos jogar!
+    //this->game->readyToPlay();    << TODO
     this->game->play();
 }

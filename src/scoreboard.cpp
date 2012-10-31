@@ -13,9 +13,11 @@
  */
 ScoreBoard::ScoreBoard() : QGraphicsItem()
 {
-    this->leftScore  = 0;
+    this->leftScore = 0;
     this->rightScore = 0;
-    this->elapsed    = QTime( 0, 0, 0 );
+    this->elapsed = QTime( 0, 0, 0 );
+    this->leftPlayerName = "Jogador 1";
+    this->rightPlayerName = "Jogador 2";
 }
 
 /**
@@ -49,10 +51,15 @@ void ScoreBoard::paint( QPainter * painter, const QStyleOptionGraphicsItem * sty
     painter->drawPixmap( 0, 0, 1000, 100, QPixmap( ":/scoreboard.png" ) );
     painter->setPen( Qt::yellow );
 
+    // nomes dos jogadores
+    painter->setFont( QFont( FONT_NAME, 28 ) );
+    painter->drawText( 33, 29, 300, 60, 0, this->leftPlayerName );
+    painter->drawText( 675, 29, 300, 60, 0, this->rightPlayerName );
+
     // tempo de jogo
-    painter->setFont( QFont( "Erbos Draco 1st Open NBP", 17 ) );
-    painter->drawText( 456, 67, 36, 25, 0, this->elapsed.toString( "mm" ) );
-    painter->drawText( 518, 67, 36, 25, 0, this->elapsed.toString( "ss" ) );
+    painter->setFont( QFont( FONT_NAME, 17 ) );
+    painter->drawText( 455, 67, 36, 25, 0, this->elapsed.toString( "mm" ) );
+    painter->drawText( 509, 67, 36, 25, 0, this->elapsed.toString( "ss" ) );
 
     // placar/número de gols dos jogadores
     int leftDec  = this->leftScore  / 10;
@@ -60,7 +67,7 @@ void ScoreBoard::paint( QPainter * painter, const QStyleOptionGraphicsItem * sty
     int rightDec = this->rightScore / 10;
     int rightNum = this->rightScore % 10;
 
-    painter->setFont( QFont( "Erbos Draco 1st Open NBP", 40 ) );
+    painter->setFont( QFont( FONT_NAME, 40 ) );
     painter->drawText( 387, 5, 85, 60, 0, QString::number( leftDec ) + QString::number( leftNum ) );
     painter->drawText( 532, 5, 85, 60, 0, QString::number( rightDec ) + QString::number( rightNum ) );
 }
@@ -80,5 +87,22 @@ void ScoreBoard::setTime( int seconds )
 {
     this->elapsed = QTime( seconds / 3600, seconds / 60, seconds % 60 );
     // atualiza apenas a área do relógio na tela
-    this->update( 456, 67, 100, 25 );
+    this->update( 455, 67, 100, 25 );
+}
+
+/**
+ * Define o nome exibido no placar para o jogador da esquerda.
+ *
+ * O valor será limitado a 10 caracteres, o excesso será ignorado.
+ */
+void ScoreBoard::setLeftPlayerName( QString name )
+{
+    this->leftPlayerName = name.left( 10 );
+    this->update( 33, 29, 300, 60 );
+}
+
+void ScoreBoard::setRightPlayerName( QString name )
+{
+    this->rightPlayerName = name.left( 10 );
+    this->update( 675, 29, 300, 60 );
 }
