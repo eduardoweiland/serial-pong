@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QGraphicsView>
 #include <QGraphicsTextItem>
+#include <QGraphicsDropShadowEffect>
 #include <QKeyEvent>
 #include <QTime>
 #include <QTimer>
@@ -28,18 +29,21 @@
  * @see http://qt-project.org/doc/qt-4.8/qgraphicsview.html#QGraphicsView
  */
 Game::Game( QWidget * parent ) :
-    QGraphicsView( new QGraphicsScene( 0, 0, 1000, 600 ), parent )
+    QGraphicsView( new QGraphicsScene( -50, 0, 1100, 600 ), parent )
 {
-    this->port            = NULL;
-    this->portName        = SERIALPORT; // porta padrão COM1
-    this->timer           = NULL;
-    this->gameTime        = NULL;
-    this->gameMode        = UNKNOWN;
-    this->moveUpKeyCode   = Qt::Key_Up;
-    this->moveDownKeyCode = Qt::Key_Down;
-    this->displayedText   = NULL;
+    this->port                = NULL;
+    this->portName            = SERIALPORT; // porta padrão COM1 (/dev/ttyS0)
+    this->timer               = NULL;
+    this->gameTime            = NULL;
+    this->gameMode            = UNKNOWN;
+    this->moveUpKeyCode       = Qt::Key_Up;
+    this->moveDownKeyCode     = Qt::Key_Down;
+    this->displayedText       = NULL;
+    this->displayedTextEffect = NULL;
+    this->otherReady          = false;
 
     this->initializeConfig();
+    qApp->installEventFilter( this );
 
     // cria a cena para conter todos os itens do jogo.
     this->scene()->setBackgroundBrush( Qt::black );
@@ -47,9 +51,21 @@ Game::Game( QWidget * parent ) :
     QRectF fieldRect = QRectF( 0, 0, 1000, 500 );
 
     // o campo do jogo (a bola não deve sair dele)
-    this->field = new QGraphicsRectItem( this->sceneRect() );
+    this->field = new QGraphicsRectItem( fieldRect );
     this->field->setBrush( QPixmap ( ":/background.png" ) );
     this->scene()->addItem( this->field );
+
+    this->goalLeft = new QGraphicsRectItem( 0, 0, 50, 200 );
+    this->goalLeft->setPen( QPen( Qt::white ) );
+    this->goalLeft->setBrush( Qt::white );
+    this->goalLeft->setPos( -50, 150 );
+    this->scene()->addItem( this->goalLeft );
+
+    this->goalRight = new QGraphicsRectItem( 0, 0, 50, 200 );
+    this->goalRight->setPen( QPen( Qt::white ) );
+    this->goalRight->setBrush( Qt::white );
+    this->goalRight->setPos( 1000, 150 );
+    this->scene()->addItem( this->goalRight );
 
     // cria a bola centralizada
     this->ball = new Ball( fieldRect );
@@ -60,7 +76,6 @@ Game::Game( QWidget * parent ) :
     this->player1 = new Player( Player::LEFT );
     this->player1->setPos( fieldRect.width() - 900, ( fieldRect.height() / 2 ) - 65 );
     this->scene()->addItem( player1 );
-    this->player1->grabKeyboard();
 
     this->player2 = new Player( Player::RIGHT );
     this->player2->setPos( fieldRect.width() - 135, ( fieldRect.height() / 2 ) - 65 );
@@ -98,7 +113,6 @@ Game::~Game()
  */
 void Game::initializeConfig()
 {
-    this->setMinimumSize( this->scene()->width(), this->scene()->height() );
     this->setFrameShape( NoFrame );
     this->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     this->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
@@ -110,6 +124,7 @@ void Game::initializeConfig()
     this->setDragMode( NoDrag );
     this->setCacheMode( CacheBackground );
     this->setViewportUpdateMode( MinimalViewportUpdate );
+    this->setCursor( QPixmap( 1, 1 ) );
 }
 
 /**
@@ -138,13 +153,28 @@ void Game::play()
     else {
         qApp->exit( ERR_BAD_GAME_MODE );
     }
+
     this->timer->start( 1000 / 20 );  // 20 FPS
     this->gameTime->start();
 
     // captura o teclado para esperar pelas teclas de controle do jogador
     this->grabKeyboard();
+    this->setMouseTracking( true );
+    this->grabMouse();
 
     // Locutor: bola rolando, começa o jogo do Servidor X Cliente aqui no estádio do Qt ;-)
+}
+
+void Game::readyToPlay()
+{
+    // se o outro jogador já informou que está pronto para o jogo, começa logo
+    if ( this->otherReady ) {
+        this->play();
+        this->removeMessage();
+    }
+    else {
+        this->showMessage( "Aguardando outro jogador...", -1 );
+    }
 }
 
 void Game::playerCollision(){
@@ -272,6 +302,10 @@ void Game::configureSerialPort()
 
 void Game::keyPressEvent( QKeyEvent * event )
 {
+    if ( !this->isPlaying() ) {
+        return;
+    }
+
     if ( this->moveUpKeyCode == event->key() ) {
         event->accept();
         if (gameMode == SERVER){
@@ -290,6 +324,40 @@ void Game::keyPressEvent( QKeyEvent * event )
             player2->todown();
         }
     }
+    else if ( Qt::Key_Escape == event->key() ) {
+        this->releaseMouse();
+    }
+}
+
+bool Game::eventFilter( QObject * obj, QEvent * event )
+{
+    if ( QEvent::MouseMove == event->type() ) {
+        QMouseEvent * mouseEvent = static_cast<QMouseEvent*>(event);
+
+        if ( mouseEvent->pos().y() < this->sceneRect().center().y() ) {
+            if ( SERVER == gameMode ) {
+                player1->toup();
+            }
+            else {
+                player2->toup();
+            }
+        }
+        else if ( mouseEvent->pos().y() > this->sceneRect().center().y() ) {
+            if ( SERVER == gameMode ) {
+                player1->todown();
+            }
+            else {
+                player2->todown();
+            }
+        }
+
+        // retorna o mouse para o centro da tela (necessário para nunca sair dos limites)
+        QCursor::setPos( this->mapToGlobal( this->sceneRect().center().toPoint() ) );
+
+        return true;
+    }
+
+    return false;
 }
 
 /**
@@ -315,6 +383,10 @@ void Game::playOnServer()
 
     // realiza os cálculos no servidor
     this->scene()->advance();
+    this->ball->rotate();
+
+    // verificações
+    this->verifyGoal();
     this->playerCollision();
 
     // envia os novos dados para o cliente
@@ -323,10 +395,11 @@ void Game::playOnServer()
     info.ballX       = this->ball->x();
     info.ballY       = this->ball->y();
     info.playerLeft  = 0;    // TODO
-    info.playerRight = 0;    // TODO
+    info.playerRight = this->player1->y();
     info.scoreLeft   = 0;    // TODO
     info.scoreRight  = 0;    // TODO
     info.gameSeconds = this->gameTime->elapsed() / 1000;
+    info.ballReverse = this->ball->getReversed();
 
     data.setRawData( (char*) &info, sizeof(GameControl) );
     this->port->write(data);
@@ -364,6 +437,8 @@ void Game::playOnClient()
 
     this->ball->setX( info->ballX );
     this->ball->setY( info->ballY );
+    this->ball->rotate( info->ballReverse );
+    this->player1->setY( info->playerLeft );
     this->scoreBoard->setTime( info->gameSeconds );
 }
 
@@ -375,9 +450,13 @@ void Game::playOnClient()
  * a mensagem não será exibida.
  *
  * @param msg A mensagem a ser exibida. Pode conter HTML.
- * @param time O tempo (em milissegundos) para a mensagem ser exibida. O padrão
- *        é 5000 (5 segundos).
+ * @param time O tempo (em milissegundos) para a mensagem ser exibida. Passe um
+ *        valor negativo para a mensagem não ser removida automaticamente (chame
+ *        o método Game::removeMessage para removê-la). O valor padrão é 5000
+ *        (5 segundos).
  * @return Retorna true se a mensagem pode ser exibida. Senão, retorna false.
+ * @note A mensagem não é bloqueante (ou seja, a exibição dela não faz com que
+ *       o jogo fique parado).
  */
 bool Game::showMessage( QString msg, int time )
 {
@@ -385,27 +464,80 @@ bool Game::showMessage( QString msg, int time )
         return false;
     }
 
+    // efeito de sombra para deixar o texto mais legível
+    this->displayedTextEffect = new QGraphicsDropShadowEffect();
+    this->displayedTextEffect->setColor( Qt::black );
+    this->displayedTextEffect->setOffset( 10 );
+    this->displayedTextEffect->setBlurRadius( 25 );
+
+    // cria o texto centralizado
     this->displayedText = new QGraphicsTextItem();
-    this->displayedText->setTextWidth( this->scene()->width() );
+    this->displayedText->setTextWidth( this->field->rect().width() );
     this->displayedText->setDefaultTextColor( Qt::yellow );
-    this->displayedText->setFont( QFont( "sans-serif", 80, QFont::Bold ) );
-    this->displayedText->setHtml( "<center style=\"line-height: 350px\">" + msg + "</center>" );
+    this->displayedText->setFont( QFont( "sans-serif", 50, QFont::Bold ) );
+    this->displayedText->setHtml( "<center style='line-height: 350px'>" + msg + "</center>" );
+    this->displayedText->setGraphicsEffect( this->displayedTextEffect );
     this->scene()->addItem( this->displayedText );
 
-    QTimer::singleShot( time, this, SLOT(removeMessage()) );
+    if ( time > 0 ) {
+        QTimer::singleShot( time, this, SLOT(removeMessage()) );
+    }
 
     return true;
 }
 
 /**
- * Slot utilizado para remover a mensagem adicionada com Game::showMessage.
+ * Remover a mensagem adicionada com Game::showMessage.
  *
- * O método é passado como parâmetro para QTimer::singleShot e serve para
- * remover a mensagem exibida após o tempo configurado.
+ * Caso a mensagem tenha sido configurada para não ser removida automaticamente,
+ * esse método deverá ser chamado para removê-la.
+ *
+ * Se a mensagem foi configurada para ser removida automaticamente após um certo
+ * tempo, esse método é chamado por QTimer::singleShot para remover a mensagem
+ * da tela.
  */
 void Game::removeMessage()
 {
+    if ( this->displayedTextEffect != NULL ) {
+        delete this->displayedTextEffect;
+        this->displayedTextEffect = NULL;
+    }
     if ( this->displayedText != NULL ) {
         this->scene()->removeItem( this->displayedText );
+        delete this->displayedText;
+        this->displayedText = NULL;
+    }
+}
+
+/**
+ * Evento de redimensionamento da área do jogo.
+ *
+ * Responsável por mater todo o jogo visível, o máximo possível, sem alterar
+ * a proporção do tamanho original.
+ */
+void Game::resizeEvent( QResizeEvent * event)
+{
+    this->fitInView( this->sceneRect(), Qt::KeepAspectRatio );
+}
+
+void Game::verifyGoal()
+{
+    int ballRadius = this->ball->boundingRect().width() / 2,
+        ballX = this->ball->x(),
+        ballY = this->ball->y(),
+        limitTop = this->goalLeft->y(),
+        limitBottom = this->goalLeft->y() + this->goalLeft->rect().height();
+
+    // na esquerda
+    if ( ballX - ballRadius == 0 && ballY - ballRadius >= limitTop && ballY + ballRadius <= limitBottom ) {
+        this->showMessage( "GOOL!", 3000 );
+        this->timer->stop();
+        QTimer::singleShot( 3000, this->timer, SLOT(start()) );
+    }
+    // na direita
+    else if ( ballX + ballRadius == this->field->rect().width() && ballY - ballRadius >= limitTop && ballY + ballRadius <= limitBottom ) {
+        this->showMessage( "GOOL!", 3000 );
+        this->timer->stop();
+        QTimer::singleShot( 3000, this->timer, SLOT(start()) );
     }
 }

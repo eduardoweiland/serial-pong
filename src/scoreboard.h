@@ -1,6 +1,8 @@
 #ifndef SCOREBOARD_H
 #define SCOREBOARD_H
 
+#define FONT_NAME "Erbos Draco 1st Open NBP"
+
 #include <QGraphicsItem>
 
 class QTime;
@@ -21,11 +23,15 @@ public:
     void paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget );
 
     void setTime( int seconds );
+    void setLeftPlayerName( QString name );
+    void setRightPlayerName( QString name );
 
 private:
     int leftScore;
     int rightScore;
     QTime elapsed;
+    QString leftPlayerName;
+    QString rightPlayerName;
 };
 
 #endif // SCOREBOARD_H

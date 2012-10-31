@@ -28,6 +28,7 @@ Ball::Ball( QRectF field ) : QGraphicsItem()
     //angle  = (qrand() % 2) ? 0 : M_PI;   // saída para direita ou esquerda
     this->speed  = 6;
     this->field = field;
+    this->rotationDir = 1;
 }
 
 /**
@@ -92,8 +93,6 @@ void Ball::advance( int phase )
     // move a bola considerando o ângulo e a velocidade atuais
     moveBy( cos( angle ) * speed, -sin( angle ) * speed );
 
-    this->setRotation( this->rotation() + ( speed * 2 * cos( angle ) ) );
-
     // verifica se a bola bateu em alguma parede
     //   !! essas verificações são feitas depois de mover
     //   !! e valem apenas para o próximo frame
@@ -115,6 +114,7 @@ void Ball::hitLeftWall()
 {
     setX( this->field.left() + radius );
     angle = M_PI - angle;
+    this->rotationDir = cos( this->angle ) >= 0 ? 1 : -1;
 }
 
 /**
@@ -129,6 +129,7 @@ void Ball::hitRightWall()
 {
     setX( this->field.right() - radius );
     angle = M_PI - angle;
+    this->rotationDir = cos( this->angle ) >= 0 ? 1 : -1;
 }
 
 /**
@@ -143,6 +144,7 @@ void Ball::hitTopWall()
 {
     setY( this->field.top() + radius );
     angle = 2 * M_PI - angle;
+    this->rotationDir = cos( this->angle ) >= 0 ? 1 : -1;
 }
 
 /**
@@ -157,6 +159,7 @@ void Ball::hitBottomWall()
 {
     setY( this->field.bottom() - radius );
     angle = 2 * M_PI - angle;
+    this->rotationDir = cos( this->angle ) >= 0 ? 1 : -1;
 }
 
 /**
@@ -198,4 +201,19 @@ void Ball::deaccelerate()
     if ( speed >= 2 ) {
         speed--;
     }
+}
+
+void Ball::rotate()
+{
+    this->setRotation( this->rotation() + ( speed * 2 * this->rotationDir ) );
+}
+
+void Ball::rotate( bool reverse )
+{
+    this->setRotation( this->rotation() + ( speed * 2 * ( reverse ? -1 : 1 ) ) );
+}
+
+short int Ball::getReversed()
+{
+    return this->rotationDir == 1 ? 0 : 1;
 }

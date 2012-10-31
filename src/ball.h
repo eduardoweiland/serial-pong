@@ -20,6 +20,10 @@ public:
 
     void accelerate();
     void deaccelerate();
+    void rotate();
+    void rotate( bool reverse );
+    short int getReversed();
+
     //teste
     void setAngle(int i);
     int getAngle ();
@@ -29,17 +33,17 @@ protected:
     void advance( int phase );
 
 private:
-    qreal  angle;
-    int    speed;
-    int    radius;
-    QRectF field;
+    qreal     angle;
+    int       speed;
+    int       radius;
+    QRectF    field;
+    short int rotationDir;
 
     void hitLeftWall();
     void hitRightWall();
     void hitTopWall();
     void hitBottomWall();
     void normalizeAngle();
-
 };
 
 #endif // BALL_H
