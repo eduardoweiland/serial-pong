@@ -63,34 +63,33 @@ void Ball::paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QW
 {
     painter->drawPixmap( this->boundingRect().toRect(), QPixmap( ":/ball.png" ) );
 }
-/**************************************************/
+/**
+ * Muda a direção da bolinha ao colidir com o jogador
+ */
 void Ball::setAngle(int i){
-    qDebug() << "bola: " << i;
-//    int x = 0;
-//    if ( i < 0){
-//        x=-1;
-//    }
-
-//    if ( i > 0){
-//        x=1;
-//    }
-
-//    this->angle=M_PI-(angle*(i%67)*x*M_PI);
-//    angle=M_PI/3;
-//    angle*= i/68;
-//    angle+= M_PI_4;
-//    if (i < 0){
+    // 71 == colisao traseira
+    // 72 == colisao superior
+    // 73 == colisao inferior
+    // else == colisao frontal
+    if ( i == 73 ){
+        this->moveBy(0, +10);
+        angle = 1.25*M_PI;
+    }
+    else if ( i == 72 ){
+        this->moveBy(0, -10);
+        angle = 0.75*M_PI;
+    }
+    else if ( i == 71 ){
+        angle = M_PI - angle;
+    }
+    else {
         angle=(M_PI/180)*(i)*(-0.7);
-//    }
-//    if (i > 0){
-//        angle=(M_PI/180)*(i)*(0.7);
-
-//    }
-//    if (i == 0){
-//        angle=0;
-//    }
+    }
 }
 
+/**
+ * Retorna o angulo da bolinha para verificar o lado da colisao
+ */
 float Ball::getAngle (){
     return this->angle;
 }
