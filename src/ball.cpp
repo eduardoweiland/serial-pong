@@ -66,24 +66,47 @@ void Ball::paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QW
 /**
  * Muda a direção da bolinha ao colidir com o jogador
  */
-void Ball::setAngle(int i){
+void Ball::setAngle(int i, int j){
+
     // 71 == colisao traseira
     // 72 == colisao superior
     // 73 == colisao inferior
     // else == colisao frontal
-    if ( i == 73 ){
-        this->moveBy(0, +10);
-        angle = 1.25*M_PI;
+
+    //player 1
+    if ( j== 1){
+        if ( i == 73 ){
+            this->moveBy(0, +10);
+            angle = 1.25*M_PI;
+        }
+        else if ( i == 72 ){
+            this->moveBy(0, -10);
+            angle = 0.75*M_PI;
+        }
+        else if ( i == 71 ){
+            angle = M_PI - angle;
+        }
+        else {
+            angle=(M_PI/180)*(i)*(-0.7);
+        }
     }
-    else if ( i == 72 ){
-        this->moveBy(0, -10);
-        angle = 0.75*M_PI;
-    }
-    else if ( i == 71 ){
-        angle = M_PI - angle;
-    }
-    else {
-        angle=(M_PI/180)*(i)*(-0.7);
+
+    //player 2
+    if ( j==2 ) {
+        if ( i == 73 ){
+            this->moveBy(0, +10);
+            angle = 1.75*M_PI;
+        }
+        else if ( i == 72 ){
+            this->moveBy(0, -10);
+            angle = 0.25*M_PI;
+        }
+        else if ( i == 71 ){
+            angle = M_PI - angle;
+        }
+        else {
+            angle=-(M_PI_2/180)*(i)*(-0.7);
+        }
     }
 }
 

@@ -178,6 +178,8 @@ void Game::readyToPlay()
 }
 
 void Game::playerCollision(){
+    // Colisão player1 (server)
+
     //Colisão frontal
     if (this->ball->getAngle() < 1.5*M_PI && this->ball->getAngle() > 0.5*M_PI){
         if ((this->ball->x()-15 <= this->player1->x()+35) &&   //Se bate na linha do jogador
@@ -185,7 +187,7 @@ void Game::playerCollision(){
             (this->ball->y()-15 <= this->player1->y()+130) &&  //Se esta acima do final do jogador
             (this->ball->x()-15 > this->player1->x()+10)       //Verifica se já passou do jogador
            ){
-            this->ball->setAngle((this->ball->y())-(this->player1->y() + this->player1->boundingRect().height()/2));
+            this->ball->setAngle((this->ball->y())-(this->player1->y() + this->player1->boundingRect().height()/2), 1);
         }
     }
     //Colisão traseira
@@ -195,7 +197,7 @@ void Game::playerCollision(){
             (this->ball->y()-15 <= this->player1->y()+130) &&  //Se esta acima do final do jogador
             (this->ball->x()+15 < this->player1->x()+25)       //Verifica se já passou do jogador
            ){
-            this->ball->setAngle(71);
+            this->ball->setAngle(71, 1);
         }
     }
     //Colisão superior
@@ -204,7 +206,7 @@ void Game::playerCollision(){
         (this->ball->x()-15 <= this->player1->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()+15 < this->player1->y()+25)       //Verifica se já passou do jogador
        ){
-        this->ball->setAngle(72);
+        this->ball->setAngle(72, 1);
     }
     //Colisão inferior
     if ((this->ball->y()-15 <= this->player1->y()+130) &&  //Se bate na linha do jogador
@@ -212,10 +214,50 @@ void Game::playerCollision(){
         (this->ball->x()-15 <= this->player1->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()-15 > this->player1->y()+105)      //Verifica se já passou do jogador
        ){
-        this->ball->setAngle(73);
+        this->ball->setAngle(73, 1);
+
+    }
+
+    //Colisão player2 (cliente)
+    //Colisão frontal
+    if (this->ball->getAngle() > 1.5*M_PI || this->ball->getAngle() < 0.5*M_PI){
+        if ((this->ball->x()+15 >= this->player2->x()) &&          //Se bate na linha do jogador
+            (this->ball->y()-15 <= this->player2->y()+130) &&      //Se esta abaixo do inicio do jogador
+            (this->ball->y()+15 >= this->player2->y()) &&          //Se esta acima do final do jogador
+            (this->ball->x()+15 < this->player2->x()+25)           //Verifica se já passou do jogador
+           ){
+            this->ball->setAngle((this->ball->y())-(this->player2->y() + this->player2->boundingRect().height()/2)*(-1), 2);
+        }
+    }
+    //Colisão traseira
+    if (this->ball->getAngle() < 1.5*M_PI && this->ball->getAngle() > 0.5*M_PI){
+        if ((this->ball->x()-15 <= this->player2->x()+35) &&      //Se bate na linha do jogador
+            (this->ball->y()+15 >= this->player2->y()) &&      //Se esta abaixo do inicio do jogador
+            (this->ball->y()-15 <= this->player2->y()+130) &&  //Se esta acima do final do jogador
+            (this->ball->x()+15 > this->player2->x()+10)       //Verifica se já passou do jogador
+           ){
+            this->ball->setAngle(71, 2);
+        }
+    }
+    //Colisão superior
+    if ((this->ball->y()+15 >= this->player2->y()) &&      //Se bate na linha do jogador
+        (this->ball->x()+15 >= this->player2->x()) &&      //Se esta no inicio do jogador
+        (this->ball->x()-15 <= this->player2->x()+35) &&   //Se esta no final do jogador
+        (this->ball->y()+15 < this->player2->y()+25)       //Verifica se já passou do jogador
+       ){
+        this->ball->setAngle(72, 2);
+    }
+    //Colisão inferior
+    if ((this->ball->y()-15 <= this->player2->y()+130) &&  //Se bate na linha do jogador
+        (this->ball->x()+15 >= this->player2->x()) &&      //Se esta no inicio do jogador
+        (this->ball->x()-15 <= this->player2->x()+35) &&   //Se esta no final do jogador
+        (this->ball->y()-15 > this->player2->y()+105)      //Verifica se já passou do jogador
+       ){
+        this->ball->setAngle(73, 2);
     }
 
 }
+
 
 void Game::setMoveUpKeyCode( Qt::Key key ){
     this->moveUpKeyCode=key;
