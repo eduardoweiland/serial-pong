@@ -25,7 +25,7 @@ public:
     short int getReversed();
 
     //teste
-    void setAngle(int i);
+    void setAngle(int i, int j);
     float getAngle ();
     //teste
 
