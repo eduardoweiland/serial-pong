@@ -1,12 +1,5 @@
 >> TAREFAS
 ==========
 
- * Game::pause
- * Game::continue
- * Game::showMessage => autoPause (param)
- * Game::removeMessage => autoContinue (param)
- * Game::greetings => mensagens de saudação (para informar que o outro jogador está pronto para jogar)
- * Game => só iniciar jogo com os dois jogadores prontos
- * +EXTRA : mover o jogador com o mouse (e depois com a cabeça!!)
- * Detectar gol
- * Colisões da bola com o goleiro
+ * Informações do cliente para o servidor
+ * Fim do jogo (como, quando, porque?)

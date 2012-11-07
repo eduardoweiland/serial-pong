@@ -23,6 +23,7 @@ public:
     void rotate();
     void rotate( bool reverse );
     short int getReversed();
+    void resetAngle();
 
     //teste
     void setAngle(int i, int j);

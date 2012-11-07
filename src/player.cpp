@@ -56,7 +56,7 @@ void Player::todown()
     }
     else if (RIGHT == mode)
     {
-        if (y() >= 360){
+        if (y() <= 360){
             moveBy(0, +10);
         }
     }

@@ -9,14 +9,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>429</width>
-    <height>384</height>
+    <width>422</width>
+    <height>416</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Opções</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1,2,1,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1,5,1,1">
    <item>
     <widget class="QGroupBox" name="groupModeSelect">
      <property name="title">
@@ -54,7 +54,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit">
+       <widget class="QLineEdit" name="editPlayerName">
         <property name="maxLength">
          <number>10</number>
         </property>
@@ -66,14 +66,20 @@
    <item>
     <widget class="QGroupBox" name="groupKeyOptions">
      <property name="title">
-      <string>Teclas de controle</string>
+      <string>Controles</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
+     <layout class="QGridLayout" name="gridLayout" rowstretch="1,1,1" columnstretch="1,1">
       <property name="horizontalSpacing">
        <number>30</number>
       </property>
       <item row="0" column="0">
        <widget class="QLabel" name="labelMoveUp">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Mover o jogador para cima</string>
         </property>
@@ -81,6 +87,12 @@
       </item>
       <item row="0" column="1">
        <widget class="QLabel" name="labelMoveDown">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Mover o jogador para baixo</string>
         </property>
@@ -103,6 +115,13 @@
         </property>
         <property name="checkable">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="chbEnableMouse">
+        <property name="text">
+         <string>Habilitar movimento com o mouse</string>
         </property>
        </widget>
       </item>
@@ -140,13 +159,7 @@
       <bool>true</bool>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
+      <property name="margin">
        <number>0</number>
       </property>
       <item>

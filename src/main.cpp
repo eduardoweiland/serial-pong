@@ -64,7 +64,7 @@ int main( int argc, char ** argv )
 
     QApplication app( argc, argv );
     app.setApplicationName( "Serial Pong" );
-    app.setApplicationVersion( "0.1 alpha" );
+    app.setApplicationVersion( "0.1 beta" );
     app.setOrganizationName( "Eduardo & Wellington softwares" ); // :D
 
     // carrega a fonte utilizada no placar

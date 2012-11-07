@@ -25,6 +25,8 @@ public:
     void setTime( int seconds );
     void setLeftPlayerName( QString name );
     void setRightPlayerName( QString name );
+    void setLeftScore( int goals );
+    void setRightScore( int goals );
 
 private:
     int leftScore;
