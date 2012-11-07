@@ -52,24 +52,19 @@ void ScoreBoard::paint( QPainter * painter, const QStyleOptionGraphicsItem * sty
     painter->setPen( Qt::yellow );
 
     // nomes dos jogadores
-    painter->setFont( QFont( FONT_NAME, 28 ) );
-    painter->drawText( 33, 29, 300, 60, 0, this->leftPlayerName );
-    painter->drawText( 675, 29, 300, 60, 0, this->rightPlayerName );
+    painter->setFont( QFont( FONT_NAME, 25 ) );
+    painter->drawText( 33, 32, 300, 60, 0, this->leftPlayerName );
+    painter->drawText( 675, 32, 300, 60, 0, this->rightPlayerName );
 
     // tempo de jogo
     painter->setFont( QFont( FONT_NAME, 17 ) );
     painter->drawText( 455, 67, 36, 25, 0, this->elapsed.toString( "mm" ) );
     painter->drawText( 509, 67, 36, 25, 0, this->elapsed.toString( "ss" ) );
 
-    // placar/número de gols dos jogadores
-    int leftDec  = this->leftScore  / 10;
-    int leftNum  = this->leftScore  % 10;
-    int rightDec = this->rightScore / 10;
-    int rightNum = this->rightScore % 10;
-
+    // placar (número de gols)
     painter->setFont( QFont( FONT_NAME, 40 ) );
-    painter->drawText( 387, 5, 85, 60, 0, QString::number( leftDec ) + QString::number( leftNum ) );
-    painter->drawText( 532, 5, 85, 60, 0, QString::number( rightDec ) + QString::number( rightNum ) );
+    painter->drawText( 387, 5, 85, 60, 0, QString::number( this->leftScore ).rightJustified( 2, '0' ) );
+    painter->drawText( 532, 5, 85, 60, 0, QString::number( this->rightScore ).rightJustified( 2, '0' ) );
 }
 
 /**
@@ -105,4 +100,16 @@ void ScoreBoard::setRightPlayerName( QString name )
 {
     this->rightPlayerName = name.left( 10 );
     this->update( 675, 29, 300, 60 );
+}
+
+void ScoreBoard::setLeftScore( int goals )
+{
+    this->leftScore = goals;
+    this->update( 387, 5, 85, 60 );
+}
+
+void ScoreBoard::setRightScore( int goals )
+{
+    this->rightScore = goals;
+    this->update( 532, 5, 85, 60 );
 }

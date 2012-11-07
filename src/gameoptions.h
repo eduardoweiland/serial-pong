@@ -28,16 +28,20 @@ public:
     ~GameOptions();
 
     // getters
-    QString getSerialPort();
-    Qt::Key getMoveUpKey();
-    Qt::Key getMoveDownKey();
-    Game::GameMode getGameMode();
+    QString getSerialPort() const;
+    QString getPlayerName() const;
+    Qt::Key getMoveUpKey() const;
+    Qt::Key getMoveDownKey() const;
+    Game::GameMode getGameMode() const;
+    bool getEnableMouse() const;
 
     // setters
     void setSerialPort( QString portName );
+    void setPlayerName( QString name );
     void setMoveUpKey( Qt::Key keyCode );
     void setMoveDownKey( Qt::Key keyCode );
     void setGameMode( Game::GameMode mode );
+    void setEnableMouse( bool enabled );
 
 private slots:
     void btnMoveUpToggled( bool pressed );
@@ -46,7 +50,7 @@ private slots:
 
 private:
     void keyPressEvent( QKeyEvent * event );
-    QString getKeyString( int code );
+    QString getKeyString( int code ) const;
 
     Ui::GameOptions * ui;
     Qt::Key moveUpKeyCode;

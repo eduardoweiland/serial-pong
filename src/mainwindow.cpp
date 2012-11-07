@@ -103,6 +103,8 @@ void MainWindow::startNewGame()
     this->game->setGameMode( this->op->getGameMode() );
     this->game->setMoveUpKeyCode( this->op->getMoveUpKey() );
     this->game->setMoveDownKeyCode( this->op->getMoveDownKey() );
+    this->game->setMoveWithMouse( this->op->getEnableMouse() );
+    this->game->setLocalPlayerName( this->op->getPlayerName() );
 
     // não precisamos mais da tela de opções
     delete this->op;
@@ -112,6 +114,6 @@ void MainWindow::startNewGame()
     connect( this->ui->actionSpeedMinus, SIGNAL(triggered()), this->game, SLOT(deaccelerate()) );
 
     // Vamos jogar!
-    //this->game->readyToPlay();    << TODO
-    this->game->play();
+    this->game->readyToPlay();    // TODO
+    //this->game->play();
 }

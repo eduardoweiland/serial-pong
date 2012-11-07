@@ -25,8 +25,8 @@
 Ball::Ball( QRectF field ) : QGraphicsItem()
 {
     this->radius = 15;
-    this->angle  = ((qrand() % 200) / 100.0) * M_PI;   // saída aleatória apenas para testes
-    //angle  = (qrand() % 2) ? 0 : M_PI;   // saída para direita ou esquerda
+    //this->angle  = ((qrand() % 200) / 100.0) * M_PI;   // saída aleatória apenas para testes
+    this->angle  = (qrand() % 2) ? 0 : M_PI;   // saída para direita ou esquerda
     this->speed  = 6;
     this->field = field;
     this->rotationDir = 1;
@@ -262,4 +262,10 @@ void Ball::rotate( bool reverse )
 short int Ball::getReversed()
 {
     return this->rotationDir == 1 ? 0 : 1;
+}
+
+void Ball::resetAngle()
+{
+    this->normalizeAngle();
+    this->angle = ( this->angle > 0.5 * M_PI && this->angle <= 1.5 * M_PI ) ? M_PI : 0;
 }

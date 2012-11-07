@@ -132,7 +132,7 @@ void GameOptions::keyPressEvent( QKeyEvent * event )
  * @return Uma string que representa a tecla.
  * @note Para teclas que não são permitidas o método retorna tecla desconhecida.
  */
-QString GameOptions::getKeyString( int code )
+QString GameOptions::getKeyString( int code ) const
 {
     if ( code >= Qt::Key_Exclam && code <= Qt::Key_AsciiTilde ) {
         return QString( QChar( code ) );
@@ -193,7 +193,7 @@ void GameOptions::validateConfig()
     this->ui->btnPlay->setDisabled(!valid);
 }
 
-QString GameOptions::getSerialPort()
+QString GameOptions::getSerialPort() const
 {
     return this->ui->editSerialPort->text();
 }
@@ -203,7 +203,7 @@ void GameOptions::setSerialPort( QString portName )
     this->ui->editSerialPort->setText( portName );
 }
 
-Qt::Key GameOptions::getMoveUpKey()
+Qt::Key GameOptions::getMoveUpKey() const
 {
     return this->moveUpKeyCode;
 }
@@ -214,7 +214,7 @@ void GameOptions::setMoveUpKey( Qt::Key keyCode )
     this->ui->btnMoveUp->setText( this->getKeyString( keyCode ) );
 }
 
-Qt::Key GameOptions::getMoveDownKey()
+Qt::Key GameOptions::getMoveDownKey() const
 {
     return this->moveDownKeyCode;
 }
@@ -225,7 +225,17 @@ void GameOptions::setMoveDownKey( Qt::Key keyCode )
     this->ui->btnMoveDown->setText( this->getKeyString( keyCode ) );
 }
 
-Game::GameMode GameOptions::getGameMode()
+bool GameOptions::getEnableMouse() const
+{
+    return this->ui->chbEnableMouse->isChecked();
+}
+
+void GameOptions::setEnableMouse( bool enabled )
+{
+    this->ui->chbEnableMouse->setChecked( enabled );
+}
+
+Game::GameMode GameOptions::getGameMode() const
 {
     if ( this->ui->rdbServerMode->isChecked() ) {
         return Game::SERVER;
@@ -241,4 +251,14 @@ void GameOptions::setGameMode( Game::GameMode mode )
 {
     this->ui->rdbServerMode->setChecked( Game::SERVER == mode );
     this->ui->rdbClientMode->setChecked( Game::CLIENT == mode );
+}
+
+QString GameOptions::getPlayerName() const
+{
+    return this->ui->editPlayerName->text();
+}
+
+void GameOptions::setPlayerName( QString name )
+{
+    this->ui->editPlayerName->setText( name );
 }
