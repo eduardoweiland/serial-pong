@@ -21,17 +21,16 @@ class QGraphicsDropShadowEffect;
  */
 typedef struct {
     // informações de posicionamento e informações do jogo
-    unsigned ballX       : 10; /**< Posição X da bola (de 0 até 1000 = 10 bits) */
-    unsigned ballY       : 9;  /**< Posição Y da bola (de 0 até 500 = 9 bits) */
-    unsigned playerLeft  : 9;  /**< Posição Y do jogador da esquerda (de 0 até 370 = 9 bits) */
-    unsigned playerRight : 9;  /**< Posição Y do jogador da direita (de 0 até 370 = 9 bits) */
-    unsigned scoreLeft   : 6;  /**< Placar do jogador da esquerda (de 0 até 63 = 6 bits) */
-    unsigned scoreRight  : 6;  /**< Placar do jogador da direita (de 0 até 63 = 6 bits) */
-    unsigned gameSeconds : 12; /**< Tempo de jogo em segundos (12 bits = 1h8min15s de jogo) */
+    unsigned ballX        : 10; /**< Posição X da bola (de 0 até 1000 = 10 bits) */
+    unsigned ballY        : 9;  /**< Posição Y da bola (de 0 até 500 = 9 bits) */
+    unsigned playerLeft   : 9;  /**< Posição Y do jogador da esquerda (de 0 até 370 = 9 bits) */
+    unsigned scoreLeft    : 6;  /**< Placar do jogador da esquerda (de 0 até 63 = 6 bits) */
+    unsigned scoreRight   : 6;  /**< Placar do jogador da direita (de 0 até 63 = 6 bits) */
+    unsigned gameSeconds  : 12; /**< Tempo de jogo em segundos (12 bits = 1h8min15s de jogo) */
 
     // informações de controle gerais
-    unsigned ballReverse : 1;  /**< Flag que indica se a bola deve girar no sentido contrário ou normal */
-    unsigned paused      : 1;  /**< Bit que indica se o jogo está pausado (1) ou não (0). */
+    unsigned ballRotation : 9;  /**< Rotação da bola (de 0 a 360 = 9 bits) */
+    unsigned paused       : 1;  /**< Bit que indica se o jogo está pausado (1) ou não (0). */
 } GameControl;
 
 /**
@@ -44,7 +43,8 @@ typedef struct {
  * Da mesma forma que GameControl, essa estrutura é um campo de bits.
  */
 typedef struct {
-    signed playerMovement : 10; /**< Quantidade de pixels que o jogador cliente se moveu */
+    unsigned playerPos : 9; /**< Posição Y do jogador da esquerda (de 0 até 370 = 9 bits) */
+    unsigned velocity  : 6; /**< Velocidade da bola configurada no cliente (de 1 a 25 = 6 bits) */
 } ClientInfo;
 
 /**
@@ -165,7 +165,7 @@ private:
 
     void configureSerialPort();
     void initializeConfig();
-    void verifyGoal();
+    bool verifyGoal();
     void playerCollision();
 };
 
