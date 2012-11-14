@@ -253,7 +253,7 @@ void Game::playerCollision(){
         }
     }
     //Colisão traseira
-    if (this->ball->getAngle() > 1.5*M_PI || this->ball->getAngle() < 0.5*M_PI){
+    else if (this->ball->getAngle() > 1.5*M_PI || this->ball->getAngle() < 0.5*M_PI){
         if ((this->ball->x()+15 >= this->player1->x()) &&      //Se bate na linha do jogador
             (this->ball->y()+15 >= this->player1->y()) &&      //Se esta abaixo do inicio do jogador
             (this->ball->y()-15 <= this->player1->y()+130) &&  //Se esta acima do final do jogador
@@ -263,7 +263,7 @@ void Game::playerCollision(){
         }
     }
     //Colisão superior
-    if ((this->ball->y()+15 >= this->player1->y()) &&      //Se bate na linha do jogador
+    else if ((this->ball->y()+15 >= this->player1->y()) &&      //Se bate na linha do jogador
         (this->ball->x()+15 >= this->player1->x()) &&      //Se esta no inicio do jogador
         (this->ball->x()-15 <= this->player1->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()+15 < this->player1->y()+25)       //Verifica se já passou do jogador
@@ -271,7 +271,7 @@ void Game::playerCollision(){
         this->ball->setAngle(72, 1);
     }
     //Colisão inferior
-    if ((this->ball->y()-15 <= this->player1->y()+130) &&  //Se bate na linha do jogador
+    else if ((this->ball->y()-15 <= this->player1->y()+130) &&  //Se bate na linha do jogador
         (this->ball->x()+15 >= this->player1->x()) &&      //Se esta no inicio do jogador
         (this->ball->x()-15 <= this->player1->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()-15 > this->player1->y()+105)      //Verifica se já passou do jogador
@@ -288,11 +288,11 @@ void Game::playerCollision(){
             (this->ball->y()+15 >= this->player2->y()) &&          //Se esta acima do final do jogador
             (this->ball->x()+15 < this->player2->x()+25)           //Verifica se já passou do jogador
            ){
-            this->ball->setAngle((this->ball->y())-(this->player2->y() + this->player2->boundingRect().height()/2)*(-1), 2);
+            this->ball->setAngle((this->ball->y())-(this->player2->y() + this->player2->boundingRect().height()/2), 2);
         }
     }
     //Colisão traseira
-    if (this->ball->getAngle() < 1.5*M_PI && this->ball->getAngle() > 0.5*M_PI){
+    else if (this->ball->getAngle() < 1.5*M_PI && this->ball->getAngle() > 0.5*M_PI){
         if ((this->ball->x()-15 <= this->player2->x()+35) &&      //Se bate na linha do jogador
             (this->ball->y()+15 >= this->player2->y()) &&      //Se esta abaixo do inicio do jogador
             (this->ball->y()-15 <= this->player2->y()+130) &&  //Se esta acima do final do jogador
@@ -302,7 +302,7 @@ void Game::playerCollision(){
         }
     }
     //Colisão superior
-    if ((this->ball->y()+15 >= this->player2->y()) &&      //Se bate na linha do jogador
+    else if ((this->ball->y()+15 >= this->player2->y()) &&      //Se bate na linha do jogador
         (this->ball->x()+15 >= this->player2->x()) &&      //Se esta no inicio do jogador
         (this->ball->x()-15 <= this->player2->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()+15 < this->player2->y()+25)       //Verifica se já passou do jogador
@@ -310,7 +310,7 @@ void Game::playerCollision(){
         this->ball->setAngle(72, 2);
     }
     //Colisão inferior
-    if ((this->ball->y()-15 <= this->player2->y()+130) &&  //Se bate na linha do jogador
+    else if ((this->ball->y()-15 <= this->player2->y()+130) &&  //Se bate na linha do jogador
         (this->ball->x()+15 >= this->player2->x()) &&      //Se esta no inicio do jogador
         (this->ball->x()-15 <= this->player2->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()-15 > this->player2->y()+105)      //Verifica se já passou do jogador
@@ -543,6 +543,10 @@ void Game::playOnServer()
     // lê as informações enviadas pelo cliente
     if ( this->port->bytesAvailable() > 0 ) {
         QByteArray read = this->port->read( sizeof(ClientInfo) );
+        ClientInfo * client;
+        client = (ClientInfo*) read.data();
+
+        qDebug() << client->playerPos << ":" << client->velocity;
     }
 
     // realiza os cálculos no servidor
@@ -554,6 +558,7 @@ void Game::playOnServer()
         // verificações
         this->verifyGoal();
         this->playerCollision();
+
 #ifndef SP_BUILD_DEBUG
     }
 #endif
@@ -565,15 +570,14 @@ void Game::playOnServer()
     // envia os novos dados para o cliente
     QByteArray data;
     GameControl info;
-    info.ballX       = this->ball->x();
-    info.ballY       = this->ball->y();
-    info.playerLeft  = this->player1->y();
-    info.playerRight = this->player2->y();  // ?
-    info.scoreLeft   = this->player1score;
-    info.scoreRight  = this->player2score;
-    info.gameSeconds = this->gameTime->elapsed() / 1000;
-    info.ballReverse = this->ball->getReversed();
-    info.paused      = this->paused;
+    info.ballX        = this->ball->x();
+    info.ballY        = this->ball->y();
+    info.playerLeft   = this->player1->y();
+    info.scoreLeft    = this->player1score;
+    info.scoreRight   = this->player2score;
+    info.gameSeconds  = this->gameTime->elapsed() / 1000;
+    info.ballRotation = this->ball->rotation();
+    info.paused       = this->paused;
 
     data.setRawData( (char*) &info, sizeof(GameControl) );
     this->port->write(data);
@@ -602,7 +606,9 @@ void Game::playOnClient()
 
     QByteArray data;
     ClientInfo client;
-    client.playerMovement = 0;   // movimento do jogador
+    client.playerPos = this->player2->y();
+    client.velocity  = 6;   // TODO:
+
     data.setRawData( (char*) &client, sizeof(ClientInfo) );
     this->port->write( data );
 
@@ -612,7 +618,7 @@ void Game::playOnClient()
     // bola
     this->ball->setX( info->ballX );
     this->ball->setY( info->ballY );
-    this->ball->rotate( info->ballReverse );
+    this->ball->setRotation( info->ballRotation );
 
     // jogadores
     this->player1->setY( info->playerLeft );
@@ -704,36 +710,52 @@ void Game::resizeEvent( QResizeEvent * event)
     this->fitInView( this->sceneRect(), Qt::KeepAspectRatio );
 }
 
-void Game::verifyGoal()
+/**
+ * Verifica se ocorreu gol ou não.
+ *
+ * Esse método utiliza a posição atual da bola e o posicionamento das goleiras
+ * definido no construtor para verificar se a posição em que a bola bateu é
+ * considerado gol ou não.
+ *
+ * As duas goleiras são verificadas separadamente, e caso ocorra o gol o placar
+ * __já é incrementado__.
+ *
+ * @return Retorna um valor bool que indica se houve ou não um gol (em qualquer
+ * lado do campo).
+ */
+bool Game::verifyGoal()
 {
     int ballRadius = this->ball->boundingRect().width() / 2,
         ballX = this->ball->x(),
         ballY = this->ball->y(),
         limitTop = this->goalLeft->y(),
-        limitBottom = this->goalLeft->y() + this->goalLeft->rect().height();
+        limitBottom = limitTop + this->goalLeft->rect().height();
     bool goal = false;
 
-    // na esquerda
-    if ( ballX - ballRadius == this->field->rect().left() &&
-         ballY - ballRadius >= limitTop && ballY + ballRadius <= limitBottom ) {
-        this->player2score++;
-        this->scoreBoard->setRightScore( this->player2score );
-        goal = true;
-    }
-    // na direita
-    else if ( ballX + ballRadius == this->field->rect().width() &&
-              ballY - ballRadius >= limitTop && ballY + ballRadius <= limitBottom ) {
-        this->player1score++;
-        this->scoreBoard->setLeftScore( this->player1score );
-        goal = true;
+    // limites superior e inferior das goleiras
+    if ( ballY - ballRadius >= limitTop && ballY + ballRadius <= limitBottom ) {
+        // na esquerda
+        if ( ballX - ballRadius <= this->field->rect().left() ) {
+            this->player2score++;
+            this->scoreBoard->setRightScore( this->player2score );
+            goal = true;
+        }
+        // na direita
+        else if ( ballX + ballRadius >= this->field->rect().width() ) {
+            this->player1score++;
+            this->scoreBoard->setLeftScore( this->player1score );
+            goal = true;
+        }
+
+        if ( goal ) {
+            this->showMessage( "GOOL!", 3000 );
+            this->pauseGame();
+            QTimer::singleShot( 3000, this, SLOT(continueGame()) );
+            this->ball->resetAngle();
+        }
     }
 
-    if ( goal ) {
-        this->showMessage( "GOOL!", 3000 );
-        this->pauseGame();
-        QTimer::singleShot( 3000, this, SLOT(continueGame()) );
-        this->ball->resetAngle();
-    }
+    return goal;
 }
 
 void Game::setLocalPlayerName( QString name )

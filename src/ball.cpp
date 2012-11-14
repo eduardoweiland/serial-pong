@@ -105,7 +105,7 @@ void Ball::setAngle(int i, int j){
             angle = M_PI - angle;
         }
         else {
-            angle=-(M_PI_2/180)*(i)*(-0.7);
+            angle=(M_PI/180)*(i)*(0.7) + M_PI;
         }
     }
 }
@@ -114,6 +114,7 @@ void Ball::setAngle(int i, int j){
  * Retorna o angulo da bolinha para verificar o lado da colisao
  */
 float Ball::getAngle (){
+    this->normalizeAngle();
     return this->angle;
 }
 
