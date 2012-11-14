@@ -192,12 +192,6 @@ void Game::play()
 
 void Game::readyToPlay()
 {
-
-#ifdef SP_BUILD_DEBUG
-    this->play();
-    return;
-#endif
-
     if ( NULL == this->port || !this->port->isOpen() ) {
         this->configureSerialPort();
     }
@@ -534,7 +528,6 @@ bool Game::eventFilter( QObject * obj, QEvent * event )
  */
 void Game::playOnServer()
 {
-#ifndef SP_BUILD_DEBUG
     // jogo só pode ser jogado com a conexão estabelecida
     if ( this->port == NULL || !this->port->isOpen() ) {
         return;
@@ -546,26 +539,18 @@ void Game::playOnServer()
         ClientInfo * client;
         client = (ClientInfo*) read.data();
 
-        qDebug() << client->playerPos << ":" << client->velocity;
+        this->player2->setY( client->playerPos );
     }
 
     // realiza os cálculos no servidor
     if ( !this->paused ) {
-#endif
         this->scene()->advance();
         this->ball->rotate();
 
         // verificações
         this->verifyGoal();
         this->playerCollision();
-
-#ifndef SP_BUILD_DEBUG
     }
-#endif
-
-#ifdef SP_BUILD_DEBUG
-    return;
-#endif
 
     // envia os novos dados para o cliente
     QByteArray data;

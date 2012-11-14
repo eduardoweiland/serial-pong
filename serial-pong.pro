@@ -34,10 +34,3 @@ FORMS += src/mainwindow.ui \
 RESOURCES += resources/icons.qrc \
              resources/pixmaps.qrc \
              resources/fonts.qrc
-
-## Verifica se o projeto foi compilado no modo DEBUG
-## O modo DEBUG desabilita algumas funcionalidades do jogo para testes
-build_pass:CONFIG(debug, debug|release) {
-    message( "Compilando no modo DEBUG!" )
-    DEFINES += SP_BUILD_DEBUG
-}
