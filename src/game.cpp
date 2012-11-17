@@ -192,6 +192,10 @@ void Game::play()
 
 void Game::readyToPlay()
 {
+#ifdef SP_BUILD_DEBUG
+    this->play();
+    return;
+#endif
     if ( NULL == this->port || !this->port->isOpen() ) {
         this->configureSerialPort();
     }
@@ -247,7 +251,7 @@ void Game::playerCollision(){
         }
     }
     //Colisão traseira
-    else if (this->ball->getAngle() > 1.5*M_PI || this->ball->getAngle() < 0.5*M_PI){
+    if (this->ball->getAngle() > 1.5*M_PI || this->ball->getAngle() < 0.5*M_PI){
         if ((this->ball->x()+15 >= this->player1->x()) &&      //Se bate na linha do jogador
             (this->ball->y()+15 >= this->player1->y()) &&      //Se esta abaixo do inicio do jogador
             (this->ball->y()-15 <= this->player1->y()+130) &&  //Se esta acima do final do jogador
@@ -257,7 +261,7 @@ void Game::playerCollision(){
         }
     }
     //Colisão superior
-    else if ((this->ball->y()+15 >= this->player1->y()) &&      //Se bate na linha do jogador
+    if ((this->ball->y()+15 >= this->player1->y()) &&      //Se bate na linha do jogador
         (this->ball->x()+15 >= this->player1->x()) &&      //Se esta no inicio do jogador
         (this->ball->x()-15 <= this->player1->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()+15 < this->player1->y()+25)       //Verifica se já passou do jogador
@@ -265,7 +269,7 @@ void Game::playerCollision(){
         this->ball->setAngle(72, 1);
     }
     //Colisão inferior
-    else if ((this->ball->y()-15 <= this->player1->y()+130) &&  //Se bate na linha do jogador
+    if ((this->ball->y()-15 <= this->player1->y()+130) &&  //Se bate na linha do jogador
         (this->ball->x()+15 >= this->player1->x()) &&      //Se esta no inicio do jogador
         (this->ball->x()-15 <= this->player1->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()-15 > this->player1->y()+105)      //Verifica se já passou do jogador
@@ -286,7 +290,7 @@ void Game::playerCollision(){
         }
     }
     //Colisão traseira
-    else if (this->ball->getAngle() < 1.5*M_PI && this->ball->getAngle() > 0.5*M_PI){
+    if (this->ball->getAngle() < 1.5*M_PI && this->ball->getAngle() > 0.5*M_PI){
         if ((this->ball->x()-15 <= this->player2->x()+35) &&      //Se bate na linha do jogador
             (this->ball->y()+15 >= this->player2->y()) &&      //Se esta abaixo do inicio do jogador
             (this->ball->y()-15 <= this->player2->y()+130) &&  //Se esta acima do final do jogador
@@ -296,7 +300,7 @@ void Game::playerCollision(){
         }
     }
     //Colisão superior
-    else if ((this->ball->y()+15 >= this->player2->y()) &&      //Se bate na linha do jogador
+    if ((this->ball->y()+15 >= this->player2->y()) &&      //Se bate na linha do jogador
         (this->ball->x()+15 >= this->player2->x()) &&      //Se esta no inicio do jogador
         (this->ball->x()-15 <= this->player2->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()+15 < this->player2->y()+25)       //Verifica se já passou do jogador
@@ -304,7 +308,7 @@ void Game::playerCollision(){
         this->ball->setAngle(72, 2);
     }
     //Colisão inferior
-    else if ((this->ball->y()-15 <= this->player2->y()+130) &&  //Se bate na linha do jogador
+    if ((this->ball->y()-15 <= this->player2->y()+130) &&  //Se bate na linha do jogador
         (this->ball->x()+15 >= this->player2->x()) &&      //Se esta no inicio do jogador
         (this->ball->x()-15 <= this->player2->x()+35) &&   //Se esta no final do jogador
         (this->ball->y()-15 > this->player2->y()+105)      //Verifica se já passou do jogador
@@ -528,6 +532,7 @@ bool Game::eventFilter( QObject * obj, QEvent * event )
  */
 void Game::playOnServer()
 {
+#ifndef SP_BUILD_DEBUG
     // jogo só pode ser jogado com a conexão estabelecida
     if ( this->port == NULL || !this->port->isOpen() ) {
         return;
@@ -544,13 +549,20 @@ void Game::playOnServer()
 
     // realiza os cálculos no servidor
     if ( !this->paused ) {
+#endif
         this->scene()->advance();
         this->ball->rotate();
 
         // verificações
         this->verifyGoal();
         this->playerCollision();
+#ifndef SP_BUILD_DEBUG
     }
+#endif
+
+#ifdef SP_BUILD_DEBUG
+    return;
+#endif
 
     // envia os novos dados para o cliente
     QByteArray data;
