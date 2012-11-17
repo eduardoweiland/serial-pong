@@ -3,7 +3,16 @@
 
 #include <QGraphicsItem>
 
+
 class QKeyEvent;
+
+/**
+ * @class Player player.h "player.h"
+ * Representa os jogadores.
+ *
+ * Essa classe é responsável por controlar o jogador e definir qual imagem será
+ * carregada para cada um (servidor e cliente).
+ */
 
 class Player : public QGraphicsItem
 {
