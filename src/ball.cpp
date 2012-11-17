@@ -106,6 +106,9 @@ void Ball::setAngle(int i, int j){
         }
         else {
             angle=(M_PI/180)*(i)*(0.7) + M_PI;
+            if (angle > 1.5*M_PI || angle < 0.5*M_PI){
+                angle = M_PI - angle;
+            }
         }
     }
 }
