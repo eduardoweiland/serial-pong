@@ -20,15 +20,10 @@ public:
 
     void accelerate();
     void deaccelerate();
-    void rotate();
-    void rotate( bool reverse );
-    short int getReversed();
     void resetAngle();
 
-    //teste
     void setAngle(int i, int j);
     float getAngle ();
-    //teste
 
 protected:
     void advance( int phase );
@@ -38,7 +33,6 @@ private:
     int       speed;
     int       radius;
     QRectF    field;
-    short int rotationDir;
 
     void hitLeftWall();
     void hitRightWall();

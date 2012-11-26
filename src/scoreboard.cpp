@@ -89,6 +89,9 @@ void ScoreBoard::setTime( int seconds )
  * Define o nome exibido no placar para o jogador da esquerda.
  *
  * O valor será limitado a 10 caracteres, o excesso será ignorado.
+ *
+ * @param name O nome a ser exibido.
+ * @see ScoreBoard::paint
  */
 void ScoreBoard::setLeftPlayerName( QString name )
 {
@@ -96,18 +99,52 @@ void ScoreBoard::setLeftPlayerName( QString name )
     this->update( 33, 29, 300, 60 );
 }
 
+/**
+ * Define o nome exibido no placar para o jogador da direita.
+ *
+ * O valor será limitado a 10 caracteres, o excesso será ignorado.
+ *
+ * @param name O nome a ser exibido.
+ * @see ScoreBoard::paint
+ */
 void ScoreBoard::setRightPlayerName( QString name )
 {
     this->rightPlayerName = name.left( 10 );
     this->update( 675, 29, 300, 60 );
 }
 
+/**
+ * Define a pontuação (número de gols) exibida do lado esquerdo.
+ *
+ * Embora não haja um limite para o valor definido por código, a área utilizada
+ * para exibir os números pode conter apenas dois dígitos, limitando assim o
+ * valor em 99.
+ *
+ * @param goals O número de gols a ser exibido no lado esquerdo.
+ * @note Na prática, o limite para o valor exibido será menor devido às
+ *       limitações na comunicação serial.
+ * @see ScoreBoard::paint
+ * @see GameControl
+ */
 void ScoreBoard::setLeftScore( int goals )
 {
     this->leftScore = goals;
     this->update( 387, 5, 85, 60 );
 }
 
+/**
+ * Define a pontuação (número de gols) exibida do lado direito.
+ *
+ * Embora não haja um limite para o valor definido por código, a área utilizada
+ * para exibir os números pode conter apenas dois dígitos, limitando assim o
+ * valor em 99.
+ *
+ * @param goals O número de gols a ser exibido no lado direito.
+ * @note Na prática, o limite para o valor exibido será menor devido às
+ *       limitações na comunicação serial.
+ * @see ScoreBoard::paint
+ * @see GameControl
+ */
 void ScoreBoard::setRightScore( int goals )
 {
     this->rightScore = goals;

@@ -156,8 +156,6 @@ void Game::initializeConfig()
  */
 void Game::play()
 {
-//    this->configureSerialPort();
-
     // inicializa o contador de frames
     this->timer = new QTimer( this );
     this->gameTime = new QTime();
@@ -551,7 +549,6 @@ void Game::playOnServer()
     if ( !this->paused ) {
 #endif
         this->scene()->advance();
-        this->ball->rotate();
 
         // verificações
         this->verifyGoal();

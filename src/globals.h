@@ -4,7 +4,12 @@
 /**
  * @def SERIALPORT
  * Define o nome da porta serial padrão para se conectar.
- * Em sistemas Windows, o padrão é COM1
+ *
+ * Em sistemas Windows, o padrão é <tt>COM1</tt>. Para sistemas *nix será
+ * utilizado o caminho <tt>/dev/ttyS0</tt>.
+ *
+ * A porta serial padrão é utilizada como valor inicial para o respectivo campo
+ * na janela de configurações do jogo GameOptions.
  */
 #ifdef Q_OS_WIN
 # define SERIALPORT "COM1"
