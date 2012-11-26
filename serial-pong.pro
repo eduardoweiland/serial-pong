@@ -37,7 +37,7 @@ RESOURCES += resources/icons.qrc \
 
 ## Verifica se o projeto foi compilado no modo DEBUG
 ## O modo DEBUG desabilita algumas funcionalidades do jogo para testes
-build_pass:CONFIG(debug, debug|release) {
+CONFIG(debug, debug|release) {
     message( "Compilando no modo DEBUG!" )
     DEFINES += SP_BUILD_DEBUG
 }
