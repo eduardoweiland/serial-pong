@@ -1,0 +1,24 @@
+>> Serial Pong
+==============
+
+Trabalho de Programação Orientada a Objetos I
+ - Eduardo Weiland
+ - Wellington Camara Lopes
+
+
+>> Links
+========
+
+ * QtCreator (para compilar o projeto) => http://qt-project.org/downloads#qt-creator
+ * Doxygen (para gerar a documentação) => http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc
+
+
+>> Documentação
+===============
+
+Para gerar a documentação, baixe o Doxygen no link acima e execute-o (GUI ou
+linha de comando) indicando o arquivo Doxyfile na raiz do projeto. A documentação
+será gerada nas pastas doc/html (arquivo index.html) e doc/latex (é necessário
+compilar o PDF final).
+
+Mais detalhes estão disponíveis na documentação gerada.
