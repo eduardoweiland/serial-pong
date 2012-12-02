@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="exit">application-exit.png</file>
+        <file alias="about">help-about.png</file>
+        <file alias="add">list-add.png</file>
+        <file alias="remove">list-remove.png</file>
+        <file alias="new">document-new.png</file>
+        <file alias="play">play.png</file>
+    </qresource>
+</RCC>

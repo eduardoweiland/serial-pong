@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ball.png</file>
+        <file>left-player.png</file>
+        <file>right-player.png</file>
+        <file>scoreboard.png</file>
+        <file>background.png</file>
+        <file>left_goalkeeper.png</file>
+        <file>right_goalkeeper.png</file>
+    </qresource>
+</RCC>
