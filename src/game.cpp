@@ -66,15 +66,13 @@ Game::Game( QWidget * parent ) :
 
     // goleira do lado esquerdo do campo
     this->goalLeft = new QGraphicsRectItem( 0, 0, 50, 200 );
-    this->goalLeft->setPen( QPen( Qt::white ) );
-    this->goalLeft->setBrush( Qt::white );
+    this->goalLeft->setBrush( QPixmap ( ":/left_goalkeeper.png" ));
     this->goalLeft->setPos( -50, 150 );
     this->scene()->addItem( this->goalLeft );
 
     // goleira do lado direito do campo
     this->goalRight = new QGraphicsRectItem( 0, 0, 50, 200 );
-    this->goalRight->setPen( QPen( Qt::white ) );
-    this->goalRight->setBrush( Qt::white );
+    this->goalRight->setBrush( QPixmap ( ":/right_goalkeeper.png" ));
     this->goalRight->setPos( 1000, 150 );
     this->scene()->addItem( this->goalRight );
 

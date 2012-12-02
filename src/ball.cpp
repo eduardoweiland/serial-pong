@@ -229,14 +229,14 @@ void Ball::normalizeAngle()
 
 /**
  * Método utilizado para acelerar a bola.
- * O limite máximo estabelecido para a velocidade da bola é de 25 pixels/frame.
+ * O limite máximo estabelecido para a velocidade da bola é de 20 pixels/frame.
  *
  * @note A velocidade real da bola também depende do número de frames por
  *       segundo (FPS) do jogo.
  */
 void Ball::accelerate()
 {
-    if ( speed <= 24 ) {
+    if ( speed <= 20 ) {
         speed++;
     }
 }
