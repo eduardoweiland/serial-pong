@@ -43,8 +43,10 @@
 #include <QtGui/QApplication>
 #include <QTime>
 #include <QFontDatabase>
+#include <QMessageBox>
 
 #include "mainwindow.h"
+#include "globals.h"
 
 /**
  * Função main.
@@ -75,5 +77,22 @@ int main( int argc, char ** argv )
     win.showMaximized();
 
     // Loop principal: só sai quando a janela for fechada
-    return app.exec();
+    int retCode = app.exec();
+
+    switch ( retCode ) {
+        case ERR_SERIAL_ERROR:
+            QMessageBox::critical( &win, "Erro", QString::fromUtf8(
+                "Erro ERR_SERIAL_ERROR:<br>"
+                "Ocorreu um erro na comunicação serial.<br>"
+                "Verifique as configurações e tente novamente.") );
+            break;
+        case ERR_BAD_GAME_MODE:
+            QMessageBox::critical( &win, "Erro", QString::fromUtf8(
+                "Erro ERR_BAD_GAME_MODE:<br>"
+                "A configuração do jogo está incorreta.<br>"
+                "Verifique as opções e tente novamente.") );
+            break;
+    }
+
+    return retCode;
 }

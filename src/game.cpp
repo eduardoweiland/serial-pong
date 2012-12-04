@@ -141,7 +141,6 @@ void Game::initializeConfig()
     this->setDragMode( NoDrag );
     this->setCacheMode( CacheBackground );
     this->setViewportUpdateMode( MinimalViewportUpdate );
-    this->setCursor( QPixmap( 1, 1 ) );
 }
 
 /**
@@ -182,6 +181,7 @@ void Game::play()
 
     if ( this->moveWithMouse ) {
         this->setMouseTracking( true );
+        this->setCursor( QPixmap( 1, 1 ) );
         this->grabMouse();
     }
 }
@@ -448,7 +448,9 @@ void Game::configureSerialPort()
     this->port->setStopBits( STOP_1 );
     this->port->setFlowControl( FLOW_OFF );
     this->port->setTimeout( 200 );
-    this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered | QIODevice::Truncate );
+    if ( !this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered | QIODevice::Truncate ) ) {
+        qApp->exit( ERR_SERIAL_ERROR );
+    }
 }
 
 void Game::keyPressEvent( QKeyEvent * event )
@@ -543,13 +545,14 @@ void Game::playOnServer()
         this->player2->setY( client->playerPos );
     }
 
+    bool isGoal = false;
     // realiza os cálculos no servidor
     if ( !this->paused ) {
 #endif
         this->scene()->advance();
 
         // verificações
-        this->verifyGoal();
+        isGoal = this->verifyGoal();
         this->playerCollision();
 #ifndef SP_BUILD_DEBUG
     }
@@ -599,7 +602,7 @@ void Game::playOnClient()
     QByteArray data;
     ClientInfo client;
     client.playerPos = this->player2->y();
-    client.velocity  = 6;   // TODO:
+    client.velocity  = 6;   /// @todo enviar velocidade correta
 
     data.setRawData( (char*) &client, sizeof(ClientInfo) );
     this->port->write( data );
