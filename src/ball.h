@@ -18,21 +18,27 @@ public:
     QRectF boundingRect() const;
     void paint( QPainter * painter, const QStyleOptionGraphicsItem * style, QWidget * widget );
 
-    void accelerate();
-    void deaccelerate();
-    void resetAngle();
+    void setSpeed( int speed );
+    int  getSpeed();
 
+    void resetAngle();
     void setAngle(int i, int j);
     float getAngle ();
+
+    void setGoals( int top, int bottom, int width );
 
 protected:
     void advance( int phase );
 
 private:
-    qreal     angle;
-    int       speed;
-    int       radius;
-    QRectF    field;
+    qreal  angle;
+    int    speed;
+    int    radius;
+    QRectF field;
+
+    int limitGoalTop;
+    int limitGoalBottom;
+    int goalWidth;
 
     void hitLeftWall();
     void hitRightWall();

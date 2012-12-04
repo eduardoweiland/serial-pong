@@ -25,10 +25,15 @@
 Ball::Ball( QRectF field ) : QGraphicsItem()
 {
     this->radius = 15;
-    //this->angle  = ((qrand() % 200) / 100.0) * M_PI;   // saída aleatória apenas para testes
     this->angle  = (qrand() % 2) ? 0 : M_PI;   // saída para direita ou esquerda
     this->speed  = 6;
-    this->field = field;
+    this->field  = field;
+
+    // por padrão considera todo o fundo do campo como o gol.
+    // ver método Ball::setGoals
+    this->limitGoalTop    = field.top();
+    this->limitGoalBottom = field.bottom();
+    this->goalWidth       = 0;
 }
 
 /**
@@ -126,7 +131,9 @@ float Ball::getAngle (){
 
 /**
  * Método utilizado para mover a bola.
+ *
  * É chamado automaticamente pelo Qt ao avançar um quadro na animação.
+ *
  * Todo o cálculo do movimento da bola e verificação de colisões é feito nesse
  * método ou através de chamadas a outros métodos privados.
  *
@@ -141,21 +148,25 @@ void Ball::advance( int phase )
     }
 
     // garante um ângulo sempre entre 0 e 360 graus
-    normalizeAngle();
+    this->normalizeAngle();
 
     // move a bola considerando o ângulo e a velocidade atuais
-    moveBy( cos( angle ) * speed, -sin( angle ) * speed );
+    this->moveBy( cos( this->angle ) * this->speed, -sin( this->angle ) * this->speed );
 
     // rotação
-    this->setRotation( this->rotation() + ( speed * 2 * cos( this->angle ) ) );
+    this->setRotation( this->rotation() + ( this->speed * 2 * cos( this->angle ) ) );
 
     // verifica se a bola bateu em alguma parede
     //   !! essas verificações são feitas depois de mover
     //   !! e valem apenas para o próximo frame
-    if ( x() - radius < this->field.left()   ) hitLeftWall();
-    if ( y() - radius < this->field.top()    ) hitTopWall();
-    if ( x() + radius > this->field.right()  ) hitRightWall();
-    if ( y() + radius > this->field.bottom() ) hitBottomWall();
+
+    bool goalArea = y() - radius > limitGoalTop && y() + radius < limitGoalBottom;
+
+    // colisões nas laterais e fundo do campo
+    if ( x() - radius < this->field.left()   && !goalArea ) hitLeftWall();
+    if ( y() - radius < this->field.top()    && !goalArea ) hitTopWall();
+    if ( x() + radius > this->field.right()  && !goalArea ) hitRightWall();
+    if ( y() + radius > this->field.bottom() && !goalArea ) hitBottomWall();
 }
 
 /**
@@ -168,8 +179,8 @@ void Ball::advance( int phase )
  */
 void Ball::hitLeftWall()
 {
-    setX( this->field.left() + radius );
-    angle = M_PI - angle;
+    this->setX( this->field.left() + this->radius );
+    this->angle = M_PI - this->angle;
 }
 
 /**
@@ -182,8 +193,8 @@ void Ball::hitLeftWall()
  */
 void Ball::hitRightWall()
 {
-    setX( this->field.right() - radius );
-    angle = M_PI - angle;
+    this->setX( this->field.right() - this->radius );
+    this->angle = M_PI - this->angle;
 }
 
 /**
@@ -196,8 +207,8 @@ void Ball::hitRightWall()
  */
 void Ball::hitTopWall()
 {
-    setY( this->field.top() + radius );
-    angle = 2 * M_PI - angle;
+    this->setY( this->field.top() + this->radius );
+    this->angle = 2 * M_PI - this->angle;
 }
 
 /**
@@ -210,8 +221,8 @@ void Ball::hitTopWall()
  */
 void Ball::hitBottomWall()
 {
-    setY( this->field.bottom() - radius );
-    angle = 2 * M_PI - angle;
+    this->setY( this->field.bottom() - this->radius );
+    this->angle = 2 * M_PI - this->angle;
 }
 
 /**
@@ -222,37 +233,36 @@ void Ball::hitBottomWall()
  */
 void Ball::normalizeAngle()
 {
-    while ( angle < 0 || angle > 2 * M_PI ) {
-        angle = qAbs( 2 * M_PI - qAbs( angle ) );
+    while ( this->angle < 0 || this->angle > 2 * M_PI ) {
+        this->angle = qAbs( 2 * M_PI - qAbs( this->angle ) );
     }
 }
 
 /**
- * Método utilizado para acelerar a bola.
- * O limite máximo estabelecido para a velocidade da bola é de 20 pixels/frame.
+ * Método utilizado para definir a velocidade de deslocamento da bola.
+ *
+ * O limite mínimo para a velocidade da bola é de 1 pixel/frame, e o máximo é de
+ * 20 pixels/frame.
+ *
+ * @param speed A velocidade que deve ser definida para a bola.
  *
  * @note A velocidade real da bola também depende do número de frames por
  *       segundo (FPS) do jogo.
  */
-void Ball::accelerate()
+void Ball::setSpeed( int speed )
 {
-    if ( speed <= 20 ) {
-        speed++;
+    if ( speed >= 1 && speed <= 20 ) {
+        this->speed = speed;
     }
 }
 
 /**
- * Método utilizado para desacelerar a bola.
- * O limite mínimo estabelecido para a velocidade da bola é de 1 pixel/frame.
- *
- * @note A velocidade real da bola também depende do número de frames por
- *       segundo (FPS) do jogo.
+ * Obtém a velocidade da bola.
+ * @return A velocidade atual da bola.
  */
-void Ball::deaccelerate()
+int Ball::getSpeed()
 {
-    if ( speed >= 2 ) {
-        speed--;
-    }
+    return this->speed;
 }
 
 /**
@@ -270,5 +280,23 @@ void Ball::deaccelerate()
 void Ball::resetAngle()
 {
     this->normalizeAngle();
-    this->angle = ( this->angle > 0.5 * M_PI && this->angle <= 1.5 * M_PI ) ? M_PI : 0;
+    this->angle = ( this->angle > 0.5 * M_PI && this->angle <= 1.5 * M_PI ) ? 0 : M_PI;
+}
+
+/**
+ * Define a posição das goleiras no campo.
+ *
+ * É necessário saber a localização das goleiras no campo para que a bola não
+ * rebata nelas como se fossem as laterais ou o fundo do campo. E também para
+ * que a bola possa ter o efeito de "entrar" no gol.
+ *
+ * @param top    O limite superior das goleiras.
+ * @param bottom O limite inferior das goleiras.
+ * @param width  A largura/profundidade da goleira
+ */
+void Ball::setGoals( int top, int bottom, int width )
+{
+    this->limitGoalTop    = top;
+    this->limitGoalBottom = bottom;
+    this->goalWidth       = width;
 }

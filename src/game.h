@@ -12,16 +12,23 @@ class ScoreBoard;
 class QGraphicsDropShadowEffect;
 
 /**
+ * BUG:
+ *   NECESSÁRIO CONVERTER AS STRUCTS PARA CHAR* COM UMA FUNÇÃO ESPECÍFICA!
+ *   APENAS USAR TYPE CAST NÃO SÓ PODE COMO ESTÁ DANDO PROBLEMAS!!
+ */
+
+
+/**
  * Define a estrutura utilizada na comunicação serial.
  *
  * Esse campo de bits é utilizado para definir os dados enviados do servidor
  * para o cliente pela comunicação serial.
  *
- * @note Essa estrutura ocupa no total 8 bytes ou 64 bits.
+ * @note Essa estrutura ocupa no total 8 bytes ou 63 bits.
  */
 typedef struct {
     // informações de posicionamento e informações do jogo
-    unsigned ballX        : 10; /**< Posição X da bola (de 0 até 1000 = 10 bits) */
+    signed   ballX        : 11; /**< Posição X da bola (de -15 até 1015 = 11 bits) */
     unsigned ballY        : 9;  /**< Posição Y da bola (de 0 até 500 = 9 bits) */
     unsigned playerLeft   : 9;  /**< Posição Y do jogador da esquerda (de 0 até 370 = 9 bits) */
     unsigned scoreLeft    : 6;  /**< Placar do jogador da esquerda (de 0 até 63 = 6 bits) */
@@ -31,6 +38,7 @@ typedef struct {
     // informações de controle gerais
     unsigned ballRotation : 9;  /**< Rotação da bola (de 0 a 360 = 9 bits) */
     unsigned paused       : 1;  /**< Bit que indica se o jogo está pausado (1) ou não (0). */
+    unsigned isGoal       : 1;  /**< Bit que indica se ocorreu um gol (para exibir a mensagem no cliente). */
 } GameControl;
 
 /**
@@ -40,7 +48,8 @@ typedef struct {
  * servidor (movimento do jogador, etc.). Essa estrutura define o formato dos
  * dados utilizados para essa comunicação.
  *
- * Da mesma forma que GameControl, essa estrutura é um campo de bits.
+ * Da mesma forma que GameControl, essa estrutura é um campo de bits, e ocupa
+ * 15 bits ou 2 bytes.
  */
 typedef struct {
     unsigned playerPos : 9; /**< Posição Y do jogador da esquerda (de 0 até 370 = 9 bits) */
@@ -57,13 +66,16 @@ typedef struct {
  * adversário paralisado em campo (sem receber as informações enviadas pelo
  * outro computador - servidor ou cliente).
  *
- * @todo Enviar também o gameMode. é necessário saber se a configuração do outro
- * jogador é compatível, para não iniciar o jogo com dois servidores - o
- * resultado é que serão dois jogos diferentes sem adversários.
+ * É enviado também o gameMode, necessário saber se a configuração do outro
+ * jogador é compatível, para não iniciar o jogo com dois servidores ou dois
+ * clientes.
+ *
+ * @note Essa estrutura ocupa 91 bits, ou 12 bytes.
  */
 typedef struct {
-    bool ready;     /**< Flag que indica se o jogador está pronto para começar o jogo */
-    char name[11];  /**< Nome do jogador (10 caracteres + '\0') */
+    bool      ready;     /**< Flag que indica se o jogador está pronto para começar o jogo. */
+    char      name[11];  /**< Nome do jogador (10 caracteres + '\0'). */
+    short int gameMode;  /**< Flag que indica o modo de jogo configurado. */
 } Greetings;
 
 /**
@@ -147,6 +159,7 @@ private:
 
     bool otherReady;
     bool paused;
+    int  speed;
 
     QString localPlayerName;
     QString remotePlayerName;
