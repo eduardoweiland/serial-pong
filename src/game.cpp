@@ -50,6 +50,7 @@ Game::Game( QWidget * parent ) :
     this->paused              = true;   // jogo pausado (esperando adversário)
     this->localPlayerName     = "";     // nome do jogador local
     this->remotePlayerName    = "";     // nome do jogador remoto/adversário
+    this->speed               = 6;
 
     // inicializa opções de renderização do jogo
     this->initializeConfig();
@@ -64,6 +65,11 @@ Game::Game( QWidget * parent ) :
     this->field->setBrush( QPixmap ( ":/background.png" ) );
     this->scene()->addItem( this->field );
 
+    // cria a bola centralizada no campo
+    this->ball = new Ball( fieldRect );
+    this->ball->setPos( fieldRect.width() / 2, fieldRect.height() / 2 );
+    this->scene()->addItem( ball );
+
     // goleira do lado esquerdo do campo
     this->goalLeft = new QGraphicsRectItem( 0, 0, 50, 200 );
     this->goalLeft->setBrush( QPixmap ( ":/left_goalkeeper.png" ));
@@ -76,10 +82,8 @@ Game::Game( QWidget * parent ) :
     this->goalRight->setPos( 1000, 150 );
     this->scene()->addItem( this->goalRight );
 
-    // cria a bola centralizada no campo
-    this->ball = new Ball( fieldRect );
-    this->ball->setPos( fieldRect.width() / 2, fieldRect.height() / 2 );
-    this->scene()->addItem( ball );
+    // envia as informações das goleiras para a bola
+    this->ball->setGoals( 150, 350, 50 );
 
     // cria os jogadores e posiciona
     this->player1 = new Player( Player::LEFT );
@@ -153,6 +157,9 @@ void Game::initializeConfig()
  */
 void Game::play()
 {
+    // configura a comunicação serial
+    this->configureSerialPort();
+
     // inicializa o contador de frames
     this->timer = new QTimer( this );
     this->gameTime = new QTime();
@@ -188,10 +195,6 @@ void Game::play()
 
 void Game::readyToPlay()
 {
-#ifdef SP_BUILD_DEBUG
-    this->play();
-    return;
-#endif
     if ( NULL == this->port || !this->port->isOpen() ) {
         this->configureSerialPort();
     }
@@ -214,22 +217,26 @@ void Game::waitPlayer()
     // informa ao outro jogador que está pronto para jogar
     Greetings info;
     info.ready = true;
+    info.gameMode = this->gameMode;
     strcpy( info.name, this->localPlayerName.toAscii().data() );
     this->port->write( (char*) &info, sizeof(Greetings) );
 
     // verifica se o outro jogador enviou informações
-    if ( this->port->bytesAvailable() >= sizeof(Greetings) ) {
+    if ( this->port->bytesAvailable() > 0 ) {
         Greetings remoteInfo;
         this->port->read( (char*) &remoteInfo, sizeof(Greetings) );
 
-        // não precisamos mais desse evento
-        this->timer->stop();
-        disconnect( this->timer, SIGNAL(timeout()), this, SLOT(waitPlayer()) );
-        delete this->timer;
+        this->otherReady = remoteInfo.ready && ( remoteInfo.gameMode != this->gameMode );
 
-        this->otherReady = remoteInfo.ready;
-        this->remotePlayerName = remoteInfo.name;
-        this->readyToPlay();
+        if ( this->otherReady ) {
+            // não precisamos mais desse evento
+            this->timer->stop();
+            disconnect( this->timer, SIGNAL(timeout()), this, SLOT(waitPlayer()) );
+            delete this->timer;
+
+            this->remotePlayerName = remoteInfo.name;
+            this->readyToPlay();
+        }
     }
 }
 
@@ -329,8 +336,8 @@ void Game::setMoveDownKeyCode( Qt::Key key ){
  */
 void Game::accelerate()
 {
-    if ( this->isPlaying() ) {
-        this->ball->accelerate();
+    if ( this->speed <= 19 ) {
+        this->speed++;
     }
 }
 
@@ -340,8 +347,8 @@ void Game::accelerate()
  */
 void Game::deaccelerate()
 {
-    if ( this->isPlaying() ) {
-        this->ball->deaccelerate();
+    if ( this->speed >= 2 ) {
+        this->speed--;
     }
 }
 
@@ -448,7 +455,7 @@ void Game::configureSerialPort()
     this->port->setStopBits( STOP_1 );
     this->port->setFlowControl( FLOW_OFF );
     this->port->setTimeout( 200 );
-    if ( !this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered | QIODevice::Truncate ) ) {
+    if ( !this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered ) ) {
         qApp->exit( ERR_SERIAL_ERROR );
     }
 }
@@ -530,40 +537,31 @@ bool Game::eventFilter( QObject * obj, QEvent * event )
  */
 void Game::playOnServer()
 {
-#ifndef SP_BUILD_DEBUG
     // jogo só pode ser jogado com a conexão estabelecida
     if ( this->port == NULL || !this->port->isOpen() ) {
         return;
     }
 
     // lê as informações enviadas pelo cliente
-    if ( this->port->bytesAvailable() > 0 ) {
-        QByteArray read = this->port->read( sizeof(ClientInfo) );
-        ClientInfo * client;
-        client = (ClientInfo*) read.data();
+    QByteArray read = this->port->read( sizeof(ClientInfo) );
+    ClientInfo * client;
+    client = (ClientInfo*) read.data();
 
-        this->player2->setY( client->playerPos );
-    }
+    this->player2->setY( client->playerPos );
+    this->ball->setSpeed( ( this->speed + client->velocity ) / 2 );
 
     bool isGoal = false;
-    // realiza os cálculos no servidor
     if ( !this->paused ) {
-#endif
+        // realiza os cálculos no servidor
         this->scene()->advance();
 
         // verificações
         isGoal = this->verifyGoal();
         this->playerCollision();
-#ifndef SP_BUILD_DEBUG
     }
-#endif
-
-#ifdef SP_BUILD_DEBUG
-    return;
-#endif
 
     // envia os novos dados para o cliente
-    QByteArray data;
+    QByteArray data = "";
     GameControl info;
     info.ballX        = this->ball->x();
     info.ballY        = this->ball->y();
@@ -573,6 +571,7 @@ void Game::playOnServer()
     info.gameSeconds  = this->gameTime->elapsed() / 1000;
     info.ballRotation = this->ball->rotation();
     info.paused       = this->paused;
+    info.isGoal       = isGoal;
 
     data.setRawData( (char*) &info, sizeof(GameControl) );
     this->port->write(data);
@@ -599,14 +598,16 @@ void Game::playOnClient()
         return;
     }
 
-    QByteArray data;
+    // envia informações para o servidor
+    QByteArray data = "";
     ClientInfo client;
     client.playerPos = this->player2->y();
-    client.velocity  = 6;   /// @todo enviar velocidade correta
+    client.velocity  = this->speed;
 
     data.setRawData( (char*) &client, sizeof(ClientInfo) );
     this->port->write( data );
 
+    // recebe do servidor
     QByteArray read = this->port->read( sizeof(GameControl) );
     GameControl * info = (GameControl*) read.data();
 
@@ -625,6 +626,10 @@ void Game::playOnClient()
 
     // controle
     this->paused = info->paused;
+
+    if ( info->isGoal ) {
+        this->showMessage( "GOOL!", 3000 );
+    }
 }
 
 /**
@@ -717,6 +722,9 @@ void Game::resizeEvent( QResizeEvent * event)
  *
  * @return Retorna um valor bool que indica se houve ou não um gol (em qualquer
  * lado do campo).
+ *
+ * @note O jogo segue as regras do futebol tradicional, ou seja, só é gol quando
+ *       a bola entra completamente dentro do gol.
  */
 bool Game::verifyGoal()
 {
@@ -730,13 +738,13 @@ bool Game::verifyGoal()
     // limites superior e inferior das goleiras
     if ( ballY - ballRadius >= limitTop && ballY + ballRadius <= limitBottom ) {
         // na esquerda
-        if ( ballX - ballRadius <= this->field->rect().left() ) {
+        if ( ballX + ballRadius <= this->field->rect().left() ) {
             this->player2score++;
             this->scoreBoard->setRightScore( this->player2score );
             goal = true;
         }
         // na direita
-        else if ( ballX + ballRadius >= this->field->rect().width() ) {
+        else if ( ballX - ballRadius >= this->field->rect().width() ) {
             this->player1score++;
             this->scoreBoard->setLeftScore( this->player1score );
             goal = true;
