@@ -190,6 +190,16 @@ void Game::play()
     }
 }
 
+/**
+ * Prepara-se para jogar.
+ *
+ * Esse método é chamado após o jogador configurar as opções na tela GameOptions,
+ * e faz duas coisas: se o outro jogador já informou que está pronto então inicia
+ * a partida; senão, envia a informação para o adversário e fica aguardando a
+ * resposta.
+ *
+ * @see Game::waitPlayer
+ */
 void Game::readyToPlay()
 {
     if ( NULL == this->port || !this->port->isOpen() ) {
@@ -209,6 +219,15 @@ void Game::readyToPlay()
     }
 }
 
+/**
+ * Aguarda o adversário.
+ *
+ * Esse método é responsável por verificar se o jogador adversário está pronto
+ * para o jogo. Se o outro jogador já está pronto e a configuração é compatível,
+ * então inicia o jogo.
+ *
+ * @see Game::readyToPlay
+ */
 void Game::waitPlayer()
 {
     // informa ao outro jogador que está pronto para jogar
@@ -457,6 +476,14 @@ void Game::configureSerialPort()
     }
 }
 
+/**
+ * Evento de pressionamento de alguma tecla.
+ *
+ * Verifica se a tecla pressionada foi uma das configuradas para mover o jogador
+ * e, se for, move o jogador na direção definida.
+ *
+ * @param event O evento da tecla
+ */
 void Game::keyPressEvent( QKeyEvent * event )
 {
     if ( !this->isPlaying() ) {
@@ -486,6 +513,19 @@ void Game::keyPressEvent( QKeyEvent * event )
     }
 }
 
+/**
+ * Filtro de eventos.
+ *
+ * Utilizado para detectar movimentos do mouse, caso esta opção tenha sido
+ * configurada.
+ *
+ * @param obj O objeto que recebeu o evento (não utilizado)
+ * @param event As informações do evento
+ *
+ * @return Se o evento foi aceito ou não.
+ *
+ * @see http://qt-project.org/doc/qt-4.8/qobject.html#eventFilter
+ */
 bool Game::eventFilter( QObject * obj, QEvent * event )
 {
     if ( !this->isPlaying() ) {
@@ -526,8 +566,6 @@ bool Game::eventFilter( QObject * obj, QEvent * event )
  *
  * Esse é o método responsável por calcular todos os movimentos do jogo e
  * depois enviar essas informações para o cliente através da comunicação serial.
- *
- * @todo Receber dados do cliente e calcular movimentos do jogador.
  *
  * @see Game::play
  * @see Game::configureSerialPort
@@ -582,8 +620,6 @@ void Game::playOnServer()
  *
  * Esse é o método responsável por receber as informações do servidor através
  * da comunicação serial e aplicá-las ao jogo.
- *
- * @todo Enviar dados para o servidor.
  *
  * @see Game::play
  * @see Game::configureSerialPort

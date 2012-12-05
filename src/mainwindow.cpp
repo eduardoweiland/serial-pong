@@ -114,6 +114,5 @@ void MainWindow::startNewGame()
     connect( this->ui->actionSpeedMinus, SIGNAL(triggered()), this->game, SLOT(deaccelerate()) );
 
     // Vamos jogar!
-    this->game->readyToPlay();    // TODO
-    //this->game->play();
+    this->game->readyToPlay();
 }

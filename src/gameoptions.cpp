@@ -10,9 +10,6 @@
 /**
  * Construtor.
  * Cria uma nova janela de opções do jogo.
- *
- * @todo O jogo só deve ser iniciado depois que os dois jogadores configurarem
- *       as opções nessa janela.
  */
 GameOptions::GameOptions( QWidget * parent ) :
     QDialog( parent ),
