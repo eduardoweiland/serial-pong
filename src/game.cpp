@@ -157,9 +157,6 @@ void Game::initializeConfig()
  */
 void Game::play()
 {
-    // configura a comunicação serial
-    this->configureSerialPort();
-
     // inicializa o contador de frames
     this->timer = new QTimer( this );
     this->gameTime = new QTime();
@@ -455,7 +452,7 @@ void Game::configureSerialPort()
     this->port->setStopBits( STOP_1 );
     this->port->setFlowControl( FLOW_OFF );
     this->port->setTimeout( 200 );
-    if ( !this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered ) ) {
+    if ( !this->port->open( QIODevice::ReadWrite | QIODevice::Unbuffered | QIODevice::Truncate ) ) {
         qApp->exit( ERR_SERIAL_ERROR );
     }
 }
