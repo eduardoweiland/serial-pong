@@ -7,6 +7,8 @@
 
 include(3rdparty/qextserialport/src/qextserialport.pri)
 
+CONFIG += qt release
+
 QT += core gui
 
 TARGET = serial-pong

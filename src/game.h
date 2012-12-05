@@ -12,28 +12,21 @@ class ScoreBoard;
 class QGraphicsDropShadowEffect;
 
 /**
- * BUG:
- *   NECESSÁRIO CONVERTER AS STRUCTS PARA CHAR* COM UMA FUNÇÃO ESPECÍFICA!
- *   APENAS USAR TYPE CAST NÃO SÓ PODE COMO ESTÁ DANDO PROBLEMAS!!
- */
-
-
-/**
  * Define a estrutura utilizada na comunicação serial.
  *
  * Esse campo de bits é utilizado para definir os dados enviados do servidor
  * para o cliente pela comunicação serial.
  *
- * @note Essa estrutura ocupa no total 8 bytes ou 63 bits.
+ * @note Essa estrutura ocupa no total 8 bytes ou 64 bits.
  */
 typedef struct {
     // informações de posicionamento e informações do jogo
-    signed   ballX        : 11; /**< Posição X da bola (de -15 até 1015 = 11 bits) */
+    signed   ballX        : 12; /**< Posição X da bola (de -15 até 1015 = 11 bits) */
     unsigned ballY        : 9;  /**< Posição Y da bola (de 0 até 500 = 9 bits) */
     unsigned playerLeft   : 9;  /**< Posição Y do jogador da esquerda (de 0 até 370 = 9 bits) */
     unsigned scoreLeft    : 6;  /**< Placar do jogador da esquerda (de 0 até 63 = 6 bits) */
     unsigned scoreRight   : 6;  /**< Placar do jogador da direita (de 0 até 63 = 6 bits) */
-    unsigned gameSeconds  : 12; /**< Tempo de jogo em segundos (12 bits = 1h8min15s de jogo) */
+    unsigned gameSeconds  : 11; /**< Tempo de jogo em segundos (11 bits = 34min07s de jogo) */
 
     // informações de controle gerais
     unsigned ballRotation : 9;  /**< Rotação da bola (de 0 a 360 = 9 bits) */
@@ -73,9 +66,9 @@ typedef struct {
  * @note Essa estrutura ocupa 91 bits, ou 12 bytes.
  */
 typedef struct {
-    bool      ready;     /**< Flag que indica se o jogador está pronto para começar o jogo. */
-    char      name[11];  /**< Nome do jogador (10 caracteres + '\0'). */
-    short int gameMode;  /**< Flag que indica o modo de jogo configurado. */
+    bool ready;     /**< Flag que indica se o jogador está pronto para começar o jogo */
+    bool gameMode;  /**< Flag que indica o modo de jogo configurado. (false = 0 = SERVER, true = 1 = CLIENT) */
+    char name[10];  /**< Nome do jogador (10 caracteres) */
 } Greetings;
 
 /**

@@ -32,6 +32,10 @@
  * Se você está em um ambiente Windows, então você realmente deve utilizar o
  * Qt Creator.
  *
+ * @note __IMPORTANTE__
+ *       O jogo __deve__ ser compilado no modo Release para que a comunicação
+ *       serial funcione corretamente.
+ *
  * ### Executando
  *
  * Para poder executar o aplicativo são necessárias as bibliotecas dinâmicas do
@@ -66,7 +70,7 @@ int main( int argc, char ** argv )
 
     QApplication app( argc, argv );
     app.setApplicationName( "Serial Pong" );
-    app.setApplicationVersion( "0.1 beta" );
+    app.setApplicationVersion( "1.0" );
     app.setOrganizationName( "Eduardo & Wellington softwares" ); // :D
 
     // carrega a fonte utilizada no placar
